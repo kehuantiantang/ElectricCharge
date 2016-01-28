@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="define_PostOffice"></string>
+    <string name="library_PostOffice_author">Drew Heavner</string>
+    <string name="library_PostOffice_authorWebsite">https://github.com/r0adkll</string>
+    <string name="library_PostOffice_libraryName">PostOffice Dialogs</string>
+    <string name="library_PostOffice_libraryDescription">This is a library for easily constructing Holo and Material Design Dialogs in either Light or Dark modes, and are completely styleable and customizable.
+    </string>
+    <string name="library_PostOffice_libraryVersion">1.0.10</string>
+    <string name="library_PostOffice_libraryWebsite">https://github.com/r0adkll/PostOffice</string>
+    <string name="library_PostOffice_licenseId">apache_2_0</string>
+    <string name="library_PostOffice_isOpenSource">true</string>
+    <string name="library_PostOffice_repositoryLink">https://github.com/r0adkll/PostOffice.git</string>
+</resources>

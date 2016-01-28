@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/DateTimePicker/DateTimePicker.iml" filepath="$PROJECT_DIR$/DateTimePicker/DateTimePicker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DialogLib/DialogLib.iml" filepath="$PROJECT_DIR$/DialogLib/DialogLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ElectricCharge.iml" filepath="$PROJECT_DIR$/ElectricCharge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FileExplorer/FileExplorer.iml" filepath="$PROJECT_DIR$/FileExplorer/FileExplorer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Logcollection/Logcollection.iml" filepath="$PROJECT_DIR$/Logcollection/Logcollection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MaterialDesign/MaterialDesign.iml" filepath="$PROJECT_DIR$/MaterialDesign/MaterialDesign.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MaterialEditText/MaterialEditText.iml" filepath="$PROJECT_DIR$/MaterialEditText/MaterialEditText.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SwipeMenuListView/SwipeMenuListView.iml" filepath="$PROJECT_DIR$/SwipeMenuListView/SwipeMenuListView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+    </modules>
+  </component>
+</project>

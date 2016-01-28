@@ -1,0 +1,141 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/hint">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:orientation="vertical"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="8dp"
+                    android:text="基本信息"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_title"
+                    android:textStyle="bold" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addGroup_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="用户组名"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_minCharacters="1"
+                    app:met_maxCharacters="15"
+                    app:met_floatingLabel="highlight" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/addGroup_price"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:hint="电费计价"
+                        android:inputType="numberDecimal"
+                        android:textSize="@dimen/text_subTitle"
+                        app:met_primaryColor="@color/colorAccent"
+                        app:met_floatingLabelText="电费计价(度)"
+                        app:met_minCharacters="1"
+                        app:met_helperText="00.00"
+                        app:met_floatingLabel="highlight" />
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/addGroup_totalNum"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="80dp"
+                        android:hint="所在用户总数"
+                        android:inputType="number"
+                        android:textSize="@dimen/text_subTitle"
+                        app:met_primaryColor="@color/colorAccent"
+                        app:met_floatingLabel="normal" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- <View
+                 android:layout_width="match_parent"
+                 android:layout_height="3px"
+                 android:layout_marginTop="24dp"
+                 android:background="@color/primary_text" />-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="其它信息"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_title"
+                    android:textStyle="bold" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addGroup_descrip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:met_maxCharacters="56"
+                    android:hint="描述"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_clearButton="true"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_floatingLabel="normal" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addGroup_remark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:met_maxCharacters="56"
+                    android:hint="备注"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_clearButton="true"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_floatingLabel="normal" />
+
+            </LinearLayout>
+
+            <include layout="@layout/button_confirm_cancel" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>

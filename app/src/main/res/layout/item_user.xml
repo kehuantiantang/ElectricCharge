@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <com.yj.eleccharge.ui.CircularImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:src="@drawable/ic_account"
+        app:civ_selector="true"
+        app:civ_selectorColor="#4403a9f4"
+        app:civ_selectorStrokeColor="#aa5677fc"
+        app:civ_selectorStrokeWidth="2dp"
+        app:civ_shadow="true" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="2dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+            <!--
+                    下面这两个有省略的作用
+                    android:ellipsize="end"
+                    android:maxLines="1"-->
+            <TextView
+                android:id="@+id/user_item_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="202"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/text_appbar"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/user_item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="64dp"
+                android:text="户主名"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/text_small" />
+
+        </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="群组:"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/user_item_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginLeft="8dp"
+                    android:text="群组"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="italic" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/user_item_phoneGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="bottom"
+                android:layout_gravity="right"
+                android:layout_marginLeft="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phone :"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/user_item_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="130-1234-4323"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="italic" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

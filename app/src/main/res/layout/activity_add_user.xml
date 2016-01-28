@@ -1,0 +1,187 @@
+<!--
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/hint">
+-->
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/hint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="8dp"
+                    android:text="个人信息"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_title"
+                    android:textStyle="bold" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addUser_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="用户名"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_minCharacters="1"
+                    app:met_maxCharacters="15"
+                    app:met_floatingLabel="highlight" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/addUser_code"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:hint="所在单元编号"
+                        android:inputType="numberSigned"
+                        android:textSize="@dimen/text_subTitle"
+                        app:met_primaryColor="@color/colorAccent"
+                        app:met_minCharacters="1"
+                        app:met_helperTextAlwaysShown="true"
+                        app:met_floatingLabel="highlight"
+                        app:met_helperText="例如：0000"/>
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/addUser_birthday"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="80dp"
+                        android:hint="出生日期"
+                        android:inputType="number"
+                        android:textSize="@dimen/text_subTitle"
+                        app:met_primaryColor="@color/colorAccent"
+                        app:met_helperText="1900/01/01"
+                        app:met_helperTextAlwaysShown="true"
+                        app:met_floatingLabel="normal" />
+
+                </LinearLayout>
+
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addUser_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="所在群组"
+                    android:editable="false"
+                    app:met_iconLeft="@drawable/ic_group_add"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_floatingLabel="highlight"
+                    app:met_maxCharacters="24"
+                    app:met_minCharacters="1"
+                    app:met_primaryColor="@color/colorAccent" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="其它信息"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_title"
+                    android:textStyle="bold" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addUser_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:met_maxCharacters="56"
+                    android:hint="联系电话"
+                    android:textSize="@dimen/text_subTitle"
+                    android:inputType="phone"
+                    app:met_iconLeft="@drawable/ic_local_phone"
+                    app:met_clearButton="true"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_floatingLabel="normal" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addUser_eMail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:met_maxCharacters="56"
+                    android:hint="E-mail"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_helperText="abcd@mail.com"
+                    app:met_clearButton="true"
+                    android:inputType="textEmailAddress"
+                    app:met_iconLeft="@drawable/ic_mail"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_helperTextAlwaysShown="true"
+                    app:met_floatingLabel="normal" />
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addUser_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:met_maxCharacters="80"
+                    android:hint="家庭住址"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_clearButton="true"
+                    app:met_iconLeft="@drawable/ic_location"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_floatingLabel="normal" />
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addUser_remark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:met_maxCharacters="56"
+                    android:hint="备注"
+                    android:textSize="@dimen/text_subTitle"
+                    app:met_iconLeft="@drawable/ic_insert_comment"
+                    app:met_clearButton="true"
+                    app:met_primaryColor="@color/colorAccent"
+                    app:met_floatingLabel="normal" />
+
+            </LinearLayout>
+
+            <include layout="@layout/button_confirm_cancel" />
+
+        </LinearLayout>
+
+    </ScrollView>
+<!--
+</RelativeLayout>-->

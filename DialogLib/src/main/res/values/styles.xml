@@ -1,0 +1,72 @@
+<resources>
+
+    <!-- Dialog Themes -->
+    <style name="Widget.PostOffice.Material.Light.Dialog.Title" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/material_title</item>
+        <item name="android:textColor">@color/material_light_dialog_title</item>
+        <item name="android:alpha">.87</item>
+        <item name="android:layout_margin">@dimen/material_spacing</item>
+    </style>
+
+    <style name="Widget.PostOffice.Material.Light.Dialog.Message" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/material_message</item>
+        <item name="android:textColor">@color/material_light_dialog_message</item>
+        <item name="android:alpha">.54</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+    </style>
+
+    <style name="Widget.PostOffice.Material.Light.Dialog.Button" parent="android:Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/material_button_height</item>
+        <item name="android:minWidth">88dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/material_button_text</item>
+        <item name="android:textColor">@color/material_light_dialog_button_default</item>
+        <item name="android:alpha">.87</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingLeft">@dimen/default_margin</item>
+        <item name="android:paddingRight">@dimen/default_margin</item>
+    </style>
+
+
+    <style name="Widget.PostOffice.Material.Dark.Dialog.Title" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/material_title</item>
+        <item name="android:textColor">@color/material_dark_dialog_title</item>
+        <item name="android:alpha">.87</item>
+        <item name="android:layout_margin">@dimen/material_spacing</item>
+    </style>
+
+    <style name="Widget.PostOffice.Material.Dark.Dialog.Message" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/material_message</item>
+        <item name="android:textColor">@color/material_dark_dialog_message</item>
+        <item name="android:alpha">.54</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+    </style>
+
+    <style name="Widget.PostOffice.Material.Dark.Dialog.Button" parent="android:Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/material_button_height</item>
+        <item name="android:minWidth">88dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/material_button_text</item>
+        <item name="android:textColor">@color/material_dark_dialog_button_default</item>
+        <item name="android:alpha">.87</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingLeft">@dimen/default_margin</item>
+        <item name="android:paddingRight">@dimen/default_margin</item>
+    </style>
+
+    <!--
+
+    Title: Roboto Medium, 20 sp, #000000 with 87% opacity
+
+    Message: Roboto Regular, 16 sp, #000000 with 54% opacity
+
+    Button Mono: Roboto Medium, 14 sp, all caps, #000000 with 87% opacity
+
+    Button Color: Roboto Medium, 14 sp, all caps, #appcolor
+    For the message text, line height is 20 px, or dp, or something.
+
+    -->
+
+</resources>

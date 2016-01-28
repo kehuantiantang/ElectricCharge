@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="material_light_dialog_title">#3C3C3D</color>
+    <color name="material_light_dialog_message">#000000</color>
+    <color name="material_light_dialog_button_default">#3C3C3D</color>
+    <color name="material_light_dialog_button_primary_default">@android:color/holo_blue_light</color>
+
+    <color name="material_dark_dialog_title">#FFFFFF</color>
+    <color name="material_dark_dialog_message">#FFFFFF</color>
+    <color name="material_dark_dialog_button_default">#FFFFFF</color>
+    <color name="material_dark_dialog_button_primary_default">@android:color/holo_blue_light</color>
+
+</resources>

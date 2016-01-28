@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="material_title">20sp</dimen>
+    <dimen name="material_message">16sp</dimen>
+    <dimen name="material_button_text">14sp</dimen>
+    <dimen name="material_button_max_width">124dp</dimen>
+    <dimen name="material_button_height">36dp</dimen>
+    <dimen name="material_spacing">24dp</dimen>
+    <dimen name="material_edittext_spacing">14dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="default_margin_small">8dp</dimen>
+
+    <dimen name="minimum_dialog_width">300dp</dimen>
+
+</resources>

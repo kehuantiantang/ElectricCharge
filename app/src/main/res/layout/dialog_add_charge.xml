@@ -1,0 +1,114 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/hint"
+    tools:context="com.yj.eleccharge.activity.AddChargeActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/addCharge_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginEnd="10dp"
+                android:text="202"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/addCharge_subTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="户主名"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/dividers" />
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/addCharge_lastElec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
+            android:hint="上月电量"
+            android:inputType="numberDecimal"
+            app:met_clearButton="true"
+            app:met_floatingLabel="highlight"
+            app:met_primaryColor="@color/colorAccent"
+            app:met_helperText="00.00"
+            app:met_minCharacters="1"
+            android:textSize="@dimen/text_subTitle" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/addCharge_nextElec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:met_floatingLabel="highlight"
+            app:met_primaryColor="@color/colorAccent"
+            android:hint="本月电量"
+            app:met_clearButton="true"
+            app:met_helperText="00.00"
+            app:met_minCharacters="1"
+            android:inputType="numberDecimal"
+            android:textSize="@dimen/text_subTitle" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/addCharge_remark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="15dp"
+            app:met_floatingLabel="normal"
+            app:met_primaryColor="@color/colorAccent"
+            android:hint="备注"
+            app:met_clearButton="true"
+            android:textSize="@dimen/text_subTitle" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <com.gc.materialdesign.views.ButtonFlat
+                android:id="@+id/addCharge_cancel"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.50"
+                android:text="取消" />
+
+            <com.gc.materialdesign.views.ButtonFlat
+                android:id="@+id/addCharge_confirm"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.50"
+                android:text="确认" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

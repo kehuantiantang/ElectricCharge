@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.andexert.library.RippleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ripple_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    ripple:rv_color="@color/ripple_material_dark"
+    ripple:rv_rippleDuration="@integer/ripple_duration"
+    ripple:rv_type="rectangle"
+    >
+
+    <Button
+        android:id="@+id/ripple_button"
+        style="@style/Widget.PostOffice.Material.Dark.Dialog.Button"
+        android:background="@android:color/transparent"
+        />
+
+</com.andexert.library.RippleView>

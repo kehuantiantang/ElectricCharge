@@ -1,0 +1,76 @@
+<resources>
+    <string name="app_name">ElectricCharge</string>
+    <string name="title_activity_add_group">群组管理</string>
+    <string name="title_activity_add_charge">AddCharge</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_search">Search</string>
+
+    <string name="action_settings">关于</string>
+
+    <string-array name="drawer_item_title">
+        <item>群组浏览|com.yj.eleccharge.fragment.GroupItemFragment</item>
+        <item>快速记录|com.yj.eleccharge.fragment.ChargeItemFragment</item>
+        <item>用户浏览|com.yj.eleccharge.fragment.UserItemFragment</item>
+        <item>时间浏览|com.yj.eleccharge.fragment.TimeItemFragment</item>
+        <item>设置|com.yj.eleccharge.fragment.SettingFragment</item>
+    </string-array>
+    
+    <string-array name="setting_xls_default">
+        <item>title|电费使用情况详单</item>
+        <item>remark|&#160;</item>
+        <item>sign|&#160;</item>
+        <item>time|&#160;</item>
+        <item>code|true</item>
+        <item>name|true</item>
+        <item>lastElec|true</item>
+        <item>nowElec|true</item>
+        <item>aggregate|true</item>
+        <item>price|true</item>
+        <item>margin|true</item>
+        <item>phone|false</item>
+        <item>location|false</item>
+        <item>eMail|false</item>
+        <item>isJump|false</item>
+        <item>isExist|true</item>
+    </string-array>
+
+    <string-array name="setting_system_default">
+        <item>setting_maxCount|9999.0</item>
+        <item>setting_saveDir|/sd/electric</item>
+        <item>setting_backup|&#160;</item>
+        <item>isExit|true</item>
+    </string-array>
+
+    <string-array name="xls_keyword">
+        <item>code|户编号</item>
+        <item>name|姓名</item>
+        <item>lastElec|上月电费</item>
+        <item>nowElec|下月电费</item>
+        <item>elec|计费量</item>
+        <item>price|单价</item>
+        <item>margin|金额(元)</item>
+        <item>phone|联系电话电话</item>
+        <item>location|家庭住址</item>
+        <item>eMail|电子邮箱</item>
+    </string-array>
+
+    <string-array name="test_string">
+        <item>test1</item>
+        <item>test1</item>
+        <item>test1</item>
+        <item>test1</item>
+        <item>test1</item>
+    </string-array>
+
+    <string name="title_activity_add_user">用户管理</string>
+    <string name="title_activity_generate_xls">生成表格文件</string>
+    <string name="title_activity_test_actitivy">TestActitivy</string>
+    <string name="title_activity_time_detail">详情</string>
+    <string name="action_edit">编辑</string>
+    <string name="title_activity_users_list">UsersListActivity</string>
+
+
+</resources>

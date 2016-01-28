@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/file_browse_frame"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent">
+
+        <com.baoyz.swipemenulistview.SwipeMenuListView
+            android:id="@+id/file_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="1dp"
+            android:divider="#B6B6B6" />
+
+        <LinearLayout
+            android:id="@+id/sd_not_available_page"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25px"
+                android:src="@drawable/ic_usb_black" />
+
+            <TextView
+                android:id="@+id/file_emptyView_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="Usb Active"
+                android:textSize="28sp" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/cutting_operation_bar"-->
+        <!--style="@style/BottomButtonBar"-->
+        <!--android:visibility="gone">-->
+
+        <!--<com.gc.materialdesign.views.ButtonRectangle-->
+            <!--android:id="@+id/cut_cancel_buttonRectangle"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:text="取消" />-->
+
+        <!--<com.gc.materialdesign.views.ButtonRectangle-->
+            <!--android:id="@+id/cut_confirm_buttonRectangle"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:text="粘贴" />-->
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/pick_operation_bar"-->
+        <!--style="@style/BottomButtonBar"-->
+        <!--android:visibility="gone">-->
+
+        <!--<com.gc.materialdesign.views.ButtonRectangle-->
+            <!--android:id="@+id/pick_cancel_buttonRectangle"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:text="取消" />-->
+
+        <!--<com.gc.materialdesign.views.ButtonRectangle-->
+            <!--android:id="@+id/pick_confirm_buttonRectangle"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:text="确认" />-->
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout xmlns:materialdesign="http://schemas.android.com/apk/res-auto"-->
+        <!--android:id="@+id/operation_bar"-->
+        <!--style="@style/BottomButtonBar"-->
+        <!--android:visibility="gone">-->
+
+        <!--<com.gc.materialdesign.views.ButtonIcon-->
+            <!--android:id="@+id/button_operation_delete"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:background="@color/colorPrimaryLight"-->
+            <!--materialdesign:iconDrawable="@drawable/ic_delete_dark" />-->
+
+        <!--<com.gc.materialdesign.views.ButtonIcon-->
+            <!--android:id="@+id/button_operation_copy"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:background="@color/colorPrimaryLight"-->
+            <!--materialdesign:iconDrawable="@drawable/ic_copy_dark" />-->
+
+        <!--<com.gc.materialdesign.views.ButtonIcon-->
+            <!--android:id="@+id/button_operation_move"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:background="@color/colorPrimaryLight"-->
+            <!--materialdesign:iconDrawable="@drawable/ic_cut_dark" />-->
+
+        <!--<com.gc.materialdesign.views.ButtonIcon-->
+            <!--android:id="@+id/button_operation_send"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:background="@color/colorPrimaryLight"-->
+            <!--materialdesign:iconDrawable="@drawable/ic_share_dark" />-->
+
+        <!--<com.gc.materialdesign.views.ButtonIcon-->
+            <!--android:id="@+id/button_operation_cancel"-->
+            <!--style="@style/BottomButtonStyle"-->
+            <!--android:background="@color/colorPrimaryLight"-->
+            <!--materialdesign:iconDrawable="@drawable/ic_cancel_dark" />-->
+    <!--</LinearLayout>-->
+</LinearLayout>

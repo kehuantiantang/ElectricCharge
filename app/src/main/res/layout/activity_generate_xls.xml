@@ -1,0 +1,325 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/hint"
+    android:fillViewport="true"
+    android:orientation="vertical"
+    android:scrollbarStyle="outsideOverlay"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="8dp"
+                android:text="基本信息"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/xls_title_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="表格大标题"
+                android:textSize="@dimen/text_subTitle"
+                app:met_floatingLabel="highlight"
+                app:met_helperText="默认是群组名"
+                app:met_helperTextAlwaysShown="true"
+                app:met_iconLeft="@drawable/ic_drawer"
+                app:met_maxCharacters="12"
+                app:met_minCharacters="0"
+                app:met_primaryColor="@color/colorAccent" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/xls_date_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:editable="false"
+                android:hint="记录日期"
+                android:textSize="@dimen/text_subTitle"
+                app:met_floatingLabel="normal"
+                app:met_helperText="1900-01"
+                app:met_helperTextAlwaysShown="true"
+                app:met_iconLeft="@drawable/ic_time"
+                app:met_primaryColor="@color/colorAccent" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="表格信息"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_code_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_code_checkBox"
+                    android:text="户编号"
+                    android:textSize="@dimen/text_appbar" />
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_name_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_name_checkBox"
+                    android:text="姓名"
+                    android:textSize="@dimen/text_appbar" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_lastElec_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_lastElec_checkBox"
+                    android:text="上月电费"
+                    android:textSize="@dimen/text_appbar" />
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_nowElec_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_nowElec_checkBox"
+                    android:text="下月电费"
+                    android:textSize="@dimen/text_appbar" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_margin_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_margin_checkBox"
+                    android:text="计费量"
+                    android:textSize="@dimen/text_appbar" />
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_price_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_price_checkBox"
+                    android:text="单价(度)"
+                    android:textSize="@dimen/text_appbar" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_aggregate_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_aggregate_checkBox"
+                    android:text="金额（元）"
+                    android:textSize="@dimen/text_appbar" />
+
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_eMail_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_eMail_checkBox"
+                    android:text="E-Mail"
+                    android:textSize="@dimen/text_appbar" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_location_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_location_checkBox"
+                    android:text="家庭住址"
+                    android:textSize="@dimen/text_appbar" />
+
+                <com.yj.eleccharge.ui.MaterialCheckBox
+                    android:id="@+id/xls_phone_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkbox_checked_color="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/xls_phone_checkBox"
+                    android:text="联系电话"
+                    android:textSize="@dimen/text_appbar" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="备注信息"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/xls_remark_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="备注"
+                android:textSize="@dimen/text_subTitle"
+                app:met_clearButton="true"
+                app:met_floatingLabel="normal"
+                app:met_iconLeft="@drawable/ic_insert_comment"
+                app:met_maxCharacters="56"
+                app:met_primaryColor="@color/colorAccent" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/xls_signature_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="记录人"
+                android:textSize="@dimen/text_subTitle"
+                app:met_clearButton="true"
+                app:met_floatingLabel="normal"
+                app:met_iconLeft="@drawable/ic_signature"
+                app:met_maxCharacters="6"
+                app:met_primaryColor="@color/colorAccent" />
+        </LinearLayout>
+
+        <include layout="@layout/button_confirm_cancel" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_material_light"
+    android:minWidth="@dimen/minimum_dialog_width"
+    >
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/Widget.PostOffice.Material.Light.Dialog.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        tools:text="Some title"
+        />
+
+    <LinearLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+        <ScrollView
+            android:id="@+id/message_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <!-- By Default use a TextView here -->
+            <TextView
+                android:id="@+id/message"
+                style="@style/Widget.PostOffice.Material.Light.Dialog.Message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/material_spacing"
+                android:layout_marginLeft="@dimen/material_spacing"
+                android:layout_marginRight="@dimen/material_spacing"
+
+                tools:text="Doodly Doodly Doo Dat"
+                />
+
+        </ScrollView>
+
+        <FrameLayout
+            android:id="@+id/style_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <com.r0adkll.postoffice.widgets.MaterialButtonLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+
+        android:layout_marginRight="@dimen/default_margin"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        >
+
+        <!-- This is the container for all the material design buttons -->
+
+
+    </com.r0adkll.postoffice.widgets.MaterialButtonLayout>
+
+
+</LinearLayout>
