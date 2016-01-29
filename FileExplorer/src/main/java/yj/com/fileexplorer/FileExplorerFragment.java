@@ -18,6 +18,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -38,6 +40,7 @@ import com.r0adkll.postoffice.model.Design;
 import com.r0adkll.postoffice.styles.ProgressStyle;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -123,6 +126,14 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
 
+    /**
+     * 长按监听事件
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     * @return
+     */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (position < 0 || position > this.fileItems.size()) {
@@ -160,8 +171,30 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         return true;
     }
 
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.menu_file_explorer, menu);
+    }
+
     /**
-     * 滑动的，点击了其中的一个按钮的触发事件
+     * 滑动，并点击了其中的一个按钮的触发事件
      *
      * @param position
      * @param menu
@@ -378,6 +411,9 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
         this.fileTools = new FileTools(getActivity());
         this.historyEntities = new Stack<>();
         this.fileItems = new ArrayList<>();
@@ -445,6 +481,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
+        super.onDestroy();
     }
 
     /**
