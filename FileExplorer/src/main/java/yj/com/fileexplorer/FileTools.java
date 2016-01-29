@@ -2,6 +2,7 @@ package yj.com.fileexplorer;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -184,26 +185,6 @@ public class FileTools {
 
 
     /**
-     * 按照文件名称进行排序
-     *
-     * @param isIncreased 升序？
-     * @return
-     */
-    public Comparator<FileItem> sortByName(final boolean isIncreased) {
-        return new Comparator<FileItem>() {
-            @Override
-            public int compare(FileItem lhs, FileItem rhs) {
-                if (isIncreased) {
-                    return lhs.getName().compareToIgnoreCase(rhs.getName());
-                } else {
-                    return -(lhs.getName().compareToIgnoreCase(rhs.getName()));
-                }
-
-            }
-        };
-    }
-
-    /**
      * 返回根路径
      *
      * @param path
@@ -223,12 +204,52 @@ public class FileTools {
     }
 
     /**
+     * 按照文件名称进行排序
+     *
+     * @param isIncreased 升序？
+     * @return
+     */
+    public static Comparator<FileItem> sortByName(final boolean isIncreased) {
+        return new Comparator<FileItem>() {
+            @Override
+            public int compare(FileItem lhs, FileItem rhs) {
+                if (isIncreased) {
+                    return lhs.getName().compareToIgnoreCase(rhs.getName());
+                } else {
+                    return -(lhs.getName().compareToIgnoreCase(rhs.getName()));
+                }
+
+            }
+        };
+    }
+
+    /**
+     * 按照文件的时间进行排序
+     * @param isIncreased 新的在前？
+     * @return
+     */
+    public static Comparator<FileItem> sortByTime(final boolean isIncreased){
+        return new Comparator<FileItem>() {
+            @Override
+            public int compare(FileItem lhs, FileItem rhs) {
+                Long lhsTime = lhs.getFile().lastModified();
+                Long rhsTime = rhs.getFile().lastModified();
+                if(isIncreased) {
+                    return lhsTime.compareTo(rhsTime);
+                }else{
+                    return -lhsTime.compareTo(rhsTime);
+                }
+            }
+        };
+    }
+
+    /**
      * 按照文件大小进行排序
      *
      * @param isIncreased 从大到小？
      * @return
      */
-    public Comparator<FileItem> sortBySize(final boolean isIncreased) {
+    public static Comparator<FileItem> sortBySize(final boolean isIncreased) {
         return new Comparator<FileItem>() {
             @Override
             public int compare(FileItem lhs, FileItem rhs) {

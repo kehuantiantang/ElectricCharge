@@ -18,20 +18,17 @@
         app:showAsAction="never">
         <menu>
             <item
-                android:id="@+id/menu_name_decrease"
-                android:title="名称降序"
+                android:id="@+id/menu_name"
+                android:title="名称"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/menu_size"
+                android:title="大小"
                 app:showAsAction="never" />
             <item
-                android:id="@+id/menu_name_increase"
-                android:title="名称升序"
-                app:showAsAction="never" />
-            <item
-                android:id="@+id/menu_size_decrease"
-                android:title="大小降序"
-                app:showAsAction="never" />
-            <item
-                android:id="@+id/menu_size_increase"
-                android:title="大小升序"
+                android:id="@+id/menu_time"
+                android:title="时间"
                 app:showAsAction="never" />
         </menu>
     </item>

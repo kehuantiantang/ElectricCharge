@@ -15,6 +15,7 @@ import android.os.Message;
 import android.os.StatFs;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import com.nhaarman.listviewanimations.appearance.simple.SwingLeftInAnimationAda
 import com.r0adkll.postoffice.PostOffice;
 import com.r0adkll.postoffice.model.Delivery;
 import com.r0adkll.postoffice.model.Design;
+import com.r0adkll.postoffice.styles.EditTextStyle;
 import com.r0adkll.postoffice.styles.ProgressStyle;
 
 import java.io.File;
@@ -64,7 +66,11 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     private FileAdapter fileAdapter;
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
-    private Comparator comparator;
+
+    /**
+     * 文件比较的一个记录
+     */
+    private CurrentOrder currentOrder;
 
     private MyHandler myHandler = new MyHandler();
 
@@ -392,7 +398,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         try {
             this.fileItems.clear();
             List<FileItem> readFileItems = fileTools.getChildrenFilesInfo(dir.getAbsolutePath());
-            Collections.sort(readFileItems, this.comparator);
+            Collections.sort(readFileItems, this.currentOrder.comparator);
             this.fileItems.addAll(readFileItems);
         } catch (Exception e) {
             e.printStackTrace();
@@ -423,7 +429,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         this.historyEntities = new Stack<>();
         this.fileItems = new ArrayList<>();
 
-        this.comparator = fileTools.sortByName(true);
+        this.currentOrder = new CurrentOrder();
     }
 
     @Nullable
@@ -493,6 +499,16 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
 
     /**
+     * 当前的顺序
+     * 初始排序为按照名字的升序排序
+     */
+    private class CurrentOrder{
+        //之前点击了的order
+        int orderId = R.id.menu_name;
+        boolean isIncreased = true;
+        Comparator comparator = FileTools.sortByName(true);
+    }
+    /**
      * 点击menu的事件
      *
      * @param item
@@ -501,27 +517,80 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_name_decrease) {
-            sortItems(fileTools.sortByName(false));
+        if (id == R.id.menu_name) {
+            boolean tmp = false;
+            if(currentOrder.orderId == id){
+                tmp = currentOrder.isIncreased;
+                currentOrder.isIncreased = !tmp;
+            }
+            currentOrder.orderId = id;
+            sortItems(FileTools.sortByName(!tmp));
             return true;
-        } else if (id == R.id.menu_name_increase) {
-            sortItems(fileTools.sortByName(true));
+        } else if (id == R.id.menu_size) {
+            boolean tmp = false;
+            if(currentOrder.orderId == id){
+                tmp = currentOrder.isIncreased;
+                currentOrder.isIncreased = !tmp;
+            }
+            currentOrder.orderId = id;
+            sortItems(FileTools.sortBySize(!tmp));
             return true;
-        } else if (id == R.id.menu_size_decrease) {
-            sortItems(fileTools.sortBySize(false));
-            return true;
-        } else if (id == R.id.menu_size_increase) {
-            sortItems(fileTools.sortBySize(true));
+        } else if (id == R.id.menu_time) {
+            boolean tmp = false;
+            if(currentOrder.orderId == id){
+                tmp = currentOrder.isIncreased;
+                currentOrder.isIncreased = !tmp;
+            }
+            currentOrder.orderId = id;
+            sortItems(FileTools.sortByTime(!tmp));
             return true;
         } else if (id == R.id.menu_refresh) {
+            if(currentDir == null){
+                listRoots();
+            }else{
+                listFiles(currentDir);
+            }
             return true;
         } else if (id == R.id.menu_exit) {
+
             return true;
         } else if (id == R.id.menu_new_folder) {
-            if (!fileTools.newFolder(currentDir.getAbsolutePath(), "新建文件夹")) {
-                showAlertDialog("", "创建文件夹失败");
-            } else {
-                listFiles(currentDir.getParentFile());
+            Log.e(TAG, currentDir == null ? "" : currentDir.getName());
+            //根文件夹无效
+            if(currentDir != null) {
+                Delivery delivery = PostOffice.newMail(getActivity())
+                        .setTitle("新建文件夹")
+                        .setThemeColor(R.color.dialogColor)
+                        .setDesign(Design.MATERIAL_LIGHT)
+                        .showKeyboardOnDisplay(true)
+                        .setButtonTextColor(Dialog.BUTTON_POSITIVE, R.color.blue_500)
+                        .setButton(Dialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setButton(Dialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setStyle(new EditTextStyle.Builder(getActivity())
+                                .setHint("输入文件夹名称")
+                                .setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                .setOnTextAcceptedListener(new EditTextStyle.OnTextAcceptedListener() {
+                                    @Override
+                                    public void onAccepted(String text) {
+                                        if (!fileTools.newFolder(currentDir.getAbsolutePath(), "".equals(text) ? "新建文件夹" : text)) {
+                                            showAlertDialog("", "文件重名，创建文件夹失败");
+                                        } else {
+                                            listFiles(currentDir);
+                                        }
+                                    }
+                                }).build())
+                        .build();
+                delivery.show(getFragmentManager());
             }
             return true;
         } else {
@@ -533,12 +602,14 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
      * 对显示的File文件夹进行排序
      */
     private void sortItems(Comparator comparator) {
-        this.comparator = comparator;
-        FileItem fileItem = this.fileItems.get(0);
-        this.fileItems.remove(0);
-        Collections.sort(this.fileItems, this.comparator);
-        this.fileItems.add(0, fileItem);
-        this.fileAdapter.notifyDataSetChanged();
+        //根目录不进行排序
+        if (currentDir != null) {
+            FileItem fileItem = this.fileItems.get(0);
+            this.fileItems.remove(0);
+            Collections.sort(this.fileItems, comparator);
+            this.fileItems.add(0, fileItem);
+            this.fileAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
