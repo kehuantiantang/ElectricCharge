@@ -61,7 +61,7 @@
         <com.gc.materialdesign.views.ButtonRectangle
             android:id="@+id/cut_confirm_buttonRectangle"
             style="@style/BottomButtonStyle"
-            android:text="粘贴" />
+            android:text="确定" />
     </LinearLayout>
 
 

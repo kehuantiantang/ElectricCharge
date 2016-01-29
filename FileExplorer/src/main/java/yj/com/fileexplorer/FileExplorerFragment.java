@@ -68,7 +68,11 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
 
+    //ListView的滚动监听事件
     private QuickReturnListViewOnScrollListener scrollListener;
+
+    private View footer;
+
 
     /**
      * 保存下来，按照需要隐藏一些menu
@@ -254,7 +258,12 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-
+        int id = v.getId();
+        if(id == R.id.cut_cancel_buttonRectangle){
+            Log.e(TAG, "cancel");
+        }else if(id == R.id.cut_confirm_buttonRectangle){
+            Log.e(TAG, "confirm");
+        }
     }
 
 
@@ -455,7 +464,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         this.swipeMenuListView.setOnItemClickListener(this);
         this.swipeMenuListView.setOnItemLongClickListener(this);
 
-        View footer = root.findViewById(R.id.cutting_operation_bar);
+        this.footer = root.findViewById(R.id.cutting_operation_bar);
 
         //两个按钮的监听事件
         (footer.findViewById(R.id.cut_confirm_buttonRectangle)).setOnClickListener(this);
@@ -470,8 +479,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 .minFooterTranslation(footerHeight)
                 .build();
 
-        //设置好监听事件，但是不触发
-        scrollListener.setScrollListenerEnabled(false);
+        //设置好，但是不显示
+        showFooter(true);
 
         this.swipeMenuListView.setOnScrollListener(scrollListener);
 
@@ -491,6 +500,14 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         listRoots();
         return root;
     }
+
+    private void showFooter(boolean visible){
+        scrollListener.setScrollListenerEnabled(visible);
+        if(footer != null){
+            footer.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
 
     /**
      * 摧毁掉注册的监听器
