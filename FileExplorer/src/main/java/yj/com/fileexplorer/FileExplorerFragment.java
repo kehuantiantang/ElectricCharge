@@ -42,7 +42,6 @@ import com.r0adkll.postoffice.styles.EditTextStyle;
 import com.r0adkll.postoffice.styles.ProgressStyle;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -83,15 +82,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
      */
     private Stack<HistoryEntity> historyEntities = null;
 
-    /**
-     * 点击Item的时候的触发事件
-     *
-     * @param parent
-     * @param view
-     * @param position
-     * @param id
-     */
-//    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position < 0 || position > this.fileItems.size()) {
@@ -178,22 +169,6 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-
-        try {
-            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
-            childFragmentManager.setAccessible(true);
-            childFragmentManager.set(this, null);
-
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.menu_file_explorer, menu);
         this.menu = menu;
@@ -202,11 +177,10 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
     /**
      * 滑动，并点击了其中的一个按钮的触发事件
-     *
-     * @param position
-     * @param menu
-     * @param index
-     * @return
+     * @param position 第几个Item
+     * @param menu 点击的swipe的Menu
+     * @param index 第几个按钮
+     * @return true 返回已经进行了操作
      */
     @Override
     public boolean onMenuItemClick(final int position, SwipeMenu menu, int index) {
@@ -261,12 +235,12 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 显示，隐藏menu
      *
-     * @param hideMenuId
-     * @param visible
+     * @param menuId  需要使用的MenuId
+     * @param visible 可见？
      */
-    public void showOrHideMenus(int[] hideMenuId, boolean visible) {
+    public void showOrHideMenus(int[] menuId, boolean visible) {
         if (this.menu != null) {
-            for (int id : hideMenuId) {
+            for (int id : menuId) {
                 this.menu.findItem(id).setVisible(visible);
                 this.menu.findItem(id).setEnabled(visible);
             }
@@ -319,6 +293,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     private void listRoots() {
         currentDir = null;
         fileItems.clear();
+        //隐藏不能使用的newFolder, Sort功能
         showOrHideMenus(new int[]{R.id.menu_new_folder, R.id.menu_sort}, false);
         Set<String> paths = fileTools.getExternalStoragePaths();
         int index = 0;
@@ -509,15 +484,9 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         int orderId = R.id.menu_name;
         boolean isIncreased = true;
         Comparator<FileItem> comparator = FileTools.sortByName(true);
-        Menu menu;
     }
 
-    /**
-     * 点击menu的事件
-     *
-     * @param item
-     * @return
-     */
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -560,7 +529,6 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
             getActivity().finish();
             return true;
         } else if (id == R.id.menu_new_folder) {
-            Log.e(TAG, currentDir == null ? "" : currentDir.getName());
             //根文件夹无效
             if (currentDir != null) {
                 Delivery delivery = PostOffice.newMail(getActivity())
@@ -603,9 +571,10 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
     /**
-     * 对显示的File文件夹进行排序
+     * 对显示的File文件夹按照比较器要求排序
+     * @param comparator 比较器
      */
-    private void sortItems(Comparator comparator) {
+    private void sortItems(Comparator<FileItem> comparator) {
         //根目录不进行排序
         if (currentDir != null) {
             FileItem fileItem = this.fileItems.get(0);
@@ -618,8 +587,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
     /**
      * 设置回调事件
-     *
-     * @param explorerCallBack
+     * @param explorerCallBack 设置Handler的回调事件
      */
     public void setExplorerCallBack(ExplorerCallBack explorerCallBack) {
         this.explorerCallBack = explorerCallBack;
@@ -628,8 +596,8 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
     /**
      * 显示提示框
-     *
-     * @param message
+     * @param title 标题
+     * @param message 信息
      */
     public Delivery showAlertDialog(String title, String message) {
         Delivery dialog;
@@ -682,11 +650,10 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
     /**
-     * 创建动作ListView适配器
-     *
+     * 创建拥有动画效果的ListView适配器
      * @param swipeMenuListView 需要添加进动画的ListView
      * @param adapter           需要的数据适配器
-     * @return
+     * @return 返回一个配置好动画的Adapter
      */
     public AnimationAdapter createAnimationAdapter(AbsListView swipeMenuListView, BaseAdapter adapter) {
         //ListView 的animation
@@ -706,8 +673,8 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 将dp单位转化为px的单位
      *
-     * @param dp
-     * @return
+     * @param dp dp值
+     * @return 返回px
      */
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
@@ -716,28 +683,27 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
     /**
      * 创建滑动的按钮
-     *
      * @param iconAndColors 滑动按钮需要的图标和颜色
-     * @param context
-     * @return
+     * @param context 上下文
+     * @return 返回一个创建好的滑动的creator
      */
     public SwipeMenuCreator createSwipeMenuCreator(final Context context, final int[][] iconAndColors) {
         SwipeMenuCreator swipeMenuCreator = new SwipeMenuCreator() {
             @Override
             public void create(SwipeMenu menu) {
-                for (int i = 0; i < iconAndColors.length; i++) {
-                    if (iconAndColors[i].length != 2) {
+                for(int[] tmp : iconAndColors){
+                    if(tmp.length != 2){
                         throw new IllegalArgumentException("The Icon and Color must set !");
                     }
                     // create "info" item
                     SwipeMenuItem item = new SwipeMenuItem(context);
                     // set item title
-                    item.setIcon(iconAndColors[i][0]);
+                    item.setIcon(tmp[0]);
                     // set item width
                     item.setWidth(dp2px(56));
 
                     // set item background
-                    item.setBackground(new ColorDrawable(iconAndColors[i][1]));
+                    item.setBackground(new ColorDrawable(tmp[1]));
                     // add to menu
                     menu.addMenuItem(item);
                 }
@@ -753,22 +719,21 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         /**
          * 更新标题栏
          *
-         * @param title
+         * @param title 标题
          */
-        public void updateTitle(String title);
+         void updateTitle(String title);
 
         /**
          * 选择的文件的路径
          *
-         * @param path
+         * @param path 地址
          */
-        public void selectedFile(String path);
+         void selectedFile(String path);
     }
 
     /**
      * 点击了返回键，如果不是根目录就不退出
-     *
-     * @return
+     * @return true 调用Activity中的系统的onBackPressed操作
      */
     public boolean onBackPressed() {
         HistoryEntity historyEntity = null;
@@ -791,7 +756,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
 
-    class MyHandler extends Handler {
+    static class MyHandler extends Handler {
         private HandlerCallBack handlerCallBack;
 
         public MyHandler() {
@@ -810,6 +775,6 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
     private interface HandlerCallBack {
-        public void executeMessage(Message message);
+        void executeMessage(Message message);
     }
 }
