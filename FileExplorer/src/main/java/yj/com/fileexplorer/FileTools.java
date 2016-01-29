@@ -2,6 +2,7 @@ package yj.com.fileexplorer;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.StatFs;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -243,6 +244,8 @@ public class FileTools {
         };
     }
 
+
+
     /**
      * 按照文件大小进行排序
      *
@@ -299,6 +302,23 @@ public class FileTools {
         //TODO 打开文件
     }
 
+
+    /**
+     * 在root目录中显示内存卡和内置内存卡有多少空间，还有多少空间剩余
+     *
+     * @param path 地址
+     * @return 卷标容量
+     */
+    public String getRootVolume(String path) {
+        StatFs stat = new StatFs(path);
+        long total = (long) stat.getBlockCount() * (long) stat.getBlockSize();
+        long free = (long) stat.getAvailableBlocks()
+                * (long) stat.getBlockSize();
+        if (total == 0) {
+            return "";
+        }
+        return "Free " + this.formatFileSize(free) + " of " + this.formatFileSize(total);
+    }
 
     /**
      * 删除文件

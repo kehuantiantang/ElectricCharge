@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.StatFs;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
@@ -66,6 +65,11 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     private FileAdapter fileAdapter;
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
+
+    /**
+     * 保存下来，按照需要隐藏一些menu
+     */
+    private Menu menu;
 
     /**
      * 文件比较的一个记录
@@ -135,15 +139,6 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
 
-    /**
-     * 长按监听事件
-     *
-     * @param parent
-     * @param view
-     * @param position
-     * @param id
-     * @return
-     */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (position < 0 || position > this.fileItems.size()) {
@@ -201,6 +196,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.menu_file_explorer, menu);
+        this.menu = menu;
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -263,6 +259,22 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
 
     /**
+     * 显示，隐藏menu
+     *
+     * @param hideMenuId
+     * @param visible
+     */
+    public void showOrHideMenus(int[] hideMenuId, boolean visible) {
+        if (this.menu != null) {
+            for (int id : hideMenuId) {
+                this.menu.findItem(id).setVisible(visible);
+                this.menu.findItem(id).setEnabled(visible);
+            }
+        }
+    }
+
+
+    /**
      * 存储上一个历史的类
      */
     private class HistoryEntity {
@@ -302,28 +314,12 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
 
     /**
-     * 在root目录中显示内存卡和内置内存卡有多少空间，还有多少空间剩余
-     *
-     * @param path lujin
-     * @return lujin
-     */
-    private String getRootVolume(String path) {
-        StatFs stat = new StatFs(path);
-        long total = (long) stat.getBlockCount() * (long) stat.getBlockSize();
-        long free = (long) stat.getAvailableBlocks()
-                * (long) stat.getBlockSize();
-        if (total == 0) {
-            return "";
-        }
-        return "Free " + fileTools.formatFileSize(free) + " of " + fileTools.formatFileSize(total);
-    }
-
-    /**
      * 根目录的情况
      */
     private void listRoots() {
         currentDir = null;
         fileItems.clear();
+        showOrHideMenus(new int[]{R.id.menu_new_folder, R.id.menu_sort}, false);
         Set<String> paths = fileTools.getExternalStoragePaths();
         int index = 0;
         for (String path : paths) {
@@ -338,7 +334,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
                     fileItem.setImageId(R.drawable.ic_sd_storage_black);
 
                 }
-                fileItem.setOther(getRootVolume(path));
+                fileItem.setOther(fileTools.getRootVolume(path));
                 fileItem.setFile(new File(path));
                 this.fileItems.add(fileItem);
             } catch (Exception e) {
@@ -353,7 +349,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 因为某些情况造成SDCard不可读的页面提示信息
      *
-     * @param message
+     * @param message 没有Item的时候显示的信息
      */
     private void setEmptyView(String message) {
         if (this.emptyView != null) {
@@ -365,10 +361,11 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 读取一个文件夹下面的文件
      *
-     * @param dir
+     * @param dir 当前文件夹
      * @return true 代表成功展示子文件夹
      */
     private boolean listFiles(File dir) {
+        //能够滑动显示出按钮
         this.swipeMenuListView.setSwipeEnabled(true);
         if (dir == null) {
             return false;
@@ -389,6 +386,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
                     this.historyEntities.clear();
                 }
                 fileAdapter.notifyDataSetChanged();
+
                 return true;
             }
             showAlertDialog(null, "抱歉，无法读取该文件夹");
@@ -415,6 +413,9 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         this.fileItems.add(0, item);
 
         this.fileAdapter.notifyDataSetChanged();
+
+        //显示异常的菜单
+        showOrHideMenus(new int[]{R.id.menu_new_folder, R.id.menu_sort}, true);
         return true;
     }
 
@@ -490,6 +491,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         try {
             if (receiverRegistered) {
                 getActivity().unregisterReceiver(receiver);
+                receiverRegistered = false;
             }
         } catch (Exception e) {
             Log.e(TAG, e.toString());
@@ -502,12 +504,14 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
      * 当前的顺序
      * 初始排序为按照名字的升序排序
      */
-    private class CurrentOrder{
+    private class CurrentOrder {
         //之前点击了的order
         int orderId = R.id.menu_name;
         boolean isIncreased = true;
-        Comparator comparator = FileTools.sortByName(true);
+        Comparator<FileItem> comparator = FileTools.sortByName(true);
+        Menu menu;
     }
+
     /**
      * 点击menu的事件
      *
@@ -519,7 +523,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         int id = item.getItemId();
         if (id == R.id.menu_name) {
             boolean tmp = false;
-            if(currentOrder.orderId == id){
+            if (currentOrder.orderId == id) {
                 tmp = currentOrder.isIncreased;
                 currentOrder.isIncreased = !tmp;
             }
@@ -528,7 +532,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
             return true;
         } else if (id == R.id.menu_size) {
             boolean tmp = false;
-            if(currentOrder.orderId == id){
+            if (currentOrder.orderId == id) {
                 tmp = currentOrder.isIncreased;
                 currentOrder.isIncreased = !tmp;
             }
@@ -537,7 +541,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
             return true;
         } else if (id == R.id.menu_time) {
             boolean tmp = false;
-            if(currentOrder.orderId == id){
+            if (currentOrder.orderId == id) {
                 tmp = currentOrder.isIncreased;
                 currentOrder.isIncreased = !tmp;
             }
@@ -545,25 +549,25 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
             sortItems(FileTools.sortByTime(!tmp));
             return true;
         } else if (id == R.id.menu_refresh) {
-            if(currentDir == null){
+            if (currentDir == null) {
                 listRoots();
-            }else{
+            } else {
                 listFiles(currentDir);
             }
             return true;
         } else if (id == R.id.menu_exit) {
-
+            this.onFragmentDestroy();
+            getActivity().finish();
             return true;
         } else if (id == R.id.menu_new_folder) {
             Log.e(TAG, currentDir == null ? "" : currentDir.getName());
             //根文件夹无效
-            if(currentDir != null) {
+            if (currentDir != null) {
                 Delivery delivery = PostOffice.newMail(getActivity())
                         .setTitle("新建文件夹")
                         .setThemeColor(R.color.dialogColor)
                         .setDesign(Design.MATERIAL_LIGHT)
                         .showKeyboardOnDisplay(true)
-                        .setButtonTextColor(Dialog.BUTTON_POSITIVE, R.color.blue_500)
                         .setButton(Dialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -662,7 +666,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 显示进度对话框
      *
-     * @param message
+     * @param message 通知
      */
     public Delivery showProgressDialog(String message) {
         Delivery dialog = PostOffice.newMail(getActivity())
@@ -792,10 +796,6 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
         public MyHandler() {
             super();
-        }
-
-        public MyHandler(HandlerCallBack handlerCallBack) {
-            this.handlerCallBack = handlerCallBack;
         }
 
         @Override
