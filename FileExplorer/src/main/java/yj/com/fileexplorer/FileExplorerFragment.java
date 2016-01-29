@@ -49,10 +49,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import yj.com.fileexplorer.ui.QuickReturnListViewOnScrollListener;
+import yj.com.fileexplorer.ui.QuickReturnViewType;
+
 /**
  * Created by Sober on 2016/1/27.
  */
-public class FileExplorerFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SwipeMenuListView.OnMenuItemClickListener {
+public class FileExplorerFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SwipeMenuListView.OnMenuItemClickListener {
 
     private String TAG = getClass().getSimpleName();
 
@@ -64,6 +67,8 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     private FileAdapter fileAdapter;
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
+
+    private QuickReturnListViewOnScrollListener scrollListener;
 
     /**
      * 保存下来，按照需要隐藏一些menu
@@ -245,6 +250,11 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
                 this.menu.findItem(id).setEnabled(visible);
             }
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
 
@@ -440,19 +450,32 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         this.swipeMenuListView = (SwipeMenuListView) root.findViewById(R.id.file_listView);
 
 
-
-
-
         //设置空的View
         this.swipeMenuListView.setEmptyView(this.emptyView);
         this.swipeMenuListView.setOnItemClickListener(this);
         this.swipeMenuListView.setOnItemLongClickListener(this);
 
+        View footer = root.findViewById(R.id.cutting_operation_bar);
+
+        //两个按钮的监听事件
+        (footer.findViewById(R.id.cut_confirm_buttonRectangle)).setOnClickListener(this);
+        (footer.findViewById(R.id.cut_cancel_buttonRectangle)).setOnClickListener(this);
+
+
+        //获得footer的高度
+        int footerHeight = getActivity().getResources().getDimensionPixelSize(R.dimen.footer_height);
+        //设置onScrollListener监听事件
+        scrollListener = new QuickReturnListViewOnScrollListener.Builder(QuickReturnViewType.FOOTER)
+                .footer(footer)
+                .minFooterTranslation(footerHeight)
+                .build();
+
+        //设置好监听事件，但是不触发
+        scrollListener.setScrollListenerEnabled(false);
+
+        this.swipeMenuListView.setOnScrollListener(scrollListener);
+
         this.fileAdapter = new FileAdapter(getActivity(), this.fileItems);
-
-
-        View bottom = inflater.inflate(R.layout.bottom_button, container, false);
-        this.swipeMenuListView.addFooterView(bottom);
 
         this.createAnimationAdapter(this.swipeMenuListView, fileAdapter);
 

@@ -27,6 +27,6 @@ dependencies {
     compile files('libs/listviewanimations_lib-core_3.1.0.jar')
     compile files('libs/listviewanimations_lib-manipulation_3.1.0.jar')
     compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
     compile project(':DialogLib')
+    compile files('libs/android-support-v7-recyclerview.jar')
 }
