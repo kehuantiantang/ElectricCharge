@@ -6,6 +6,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.ViewConfiguration;
+
+import java.lang.reflect.Field;
 
 /**
  * 文件浏览管理的Activity
@@ -26,11 +29,10 @@ public class FileExplorerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_explorer);
 
-
-
+        //TODO 就是显示不了标题....
         this.actionBar = super.getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
         this.actionBar.setTitle("文件浏览器");
-        this.actionBar.setDisplayHomeAsUpEnabled(true);
 
         this.fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
@@ -52,15 +54,29 @@ public class FileExplorerActivity extends AppCompatActivity {
         });
         fragmentTransaction.add(R.id.fragment_container, this.fileExplorerFragment);
         fragmentTransaction.commit();
+
+        this.setOverflowMenu();
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_file_explorer, menu);
-//        return true;
-//    }
 
+
+    /**
+     * 通过反射强制让Menu显示在ActionBar上面,在OnCreate中调用
+     * http://www.cnblogs.com/xiaofeixiang/p/4034067.html
+     */
+    private void setOverflowMenu() {
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if(menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     /**

@@ -20,6 +20,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -62,6 +64,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     private FileAdapter fileAdapter;
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
+    private Comparator comparator;
 
     private MyHandler myHandler = new MyHandler();
 
@@ -104,7 +107,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
             }
         } else if (!file.canRead()) {
-            showAlertDialog(null , "对不起，您无法访问该文件");
+            showAlertDialog(null, "对不起，您无法访问该文件");
         } else if (file.isDirectory()) {
             //历史记录,永远是上一层
             HistoryEntity historyEntity = new HistoryEntity();
@@ -128,6 +131,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
     /**
      * 长按监听事件
+     *
      * @param parent
      * @param view
      * @param position
@@ -160,12 +164,12 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
                             dialog.dismiss();
                         }
                     }).show(getFragmentManager());
-        }else{
+        } else {
             //不是文件夹，长按显示详细信息
             try {
                 showAlertDialog(file.getName(), fileTools.getFileDetailInfo(file.getAbsolutePath()));
             } catch (Exception e) {
-                showAlertDialog("警告" , e.getMessage());
+                showAlertDialog("警告", e.getMessage());
             }
         }
         return true;
@@ -191,6 +195,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.menu_file_explorer, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /**
@@ -216,9 +221,9 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
                     @Override
                     public void executeMessage(Message message) {
                         dialog.dismiss();
-                        if(!(boolean)message.obj){
-                            showAlertDialog("警告", "删除 "+file.getName() + " 失败");
-                        }else{
+                        if (!(boolean) message.obj) {
+                            showAlertDialog("警告", "删除 " + file.getName() + " 失败");
+                        } else {
                             fileItems.remove(position);
                             fileAdapter.notifyDataSetChanged();
                         }
@@ -293,7 +298,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 在root目录中显示内存卡和内置内存卡有多少空间，还有多少空间剩余
      *
-     * @param path  lujin
+     * @param path lujin
      * @return lujin
      */
     private String getRootVolume(String path) {
@@ -387,7 +392,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         try {
             this.fileItems.clear();
             List<FileItem> readFileItems = fileTools.getChildrenFilesInfo(dir.getAbsolutePath());
-            Collections.sort(readFileItems, fileTools.increaseNameSort());
+            Collections.sort(readFileItems, this.comparator);
             this.fileItems.addAll(readFileItems);
         } catch (Exception e) {
             e.printStackTrace();
@@ -417,6 +422,8 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         this.fileTools = new FileTools(getActivity());
         this.historyEntities = new Stack<>();
         this.fileItems = new ArrayList<>();
+
+        this.comparator = fileTools.sortByName(true);
     }
 
     @Nullable
@@ -484,6 +491,56 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         super.onDestroy();
     }
 
+
+    /**
+     * 点击menu的事件
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_name_decrease) {
+            sortItems(fileTools.sortByName(false));
+            return true;
+        } else if (id == R.id.menu_name_increase) {
+            sortItems(fileTools.sortByName(true));
+            return true;
+        } else if (id == R.id.menu_size_decrease) {
+            sortItems(fileTools.sortBySize(false));
+            return true;
+        } else if (id == R.id.menu_size_increase) {
+            sortItems(fileTools.sortBySize(true));
+            return true;
+        } else if (id == R.id.menu_refresh) {
+            return true;
+        } else if (id == R.id.menu_exit) {
+            return true;
+        } else if (id == R.id.menu_new_folder) {
+            if (!fileTools.newFolder(currentDir.getAbsolutePath(), "新建文件夹")) {
+                showAlertDialog("", "创建文件夹失败");
+            } else {
+                listFiles(currentDir.getParentFile());
+            }
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 对显示的File文件夹进行排序
+     */
+    private void sortItems(Comparator comparator) {
+        this.comparator = comparator;
+        FileItem fileItem = this.fileItems.get(0);
+        this.fileItems.remove(0);
+        Collections.sort(this.fileItems, this.comparator);
+        this.fileItems.add(0, fileItem);
+        this.fileAdapter.notifyDataSetChanged();
+    }
+
     /**
      * 设置回调事件
      *
@@ -501,7 +558,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
      */
     public Delivery showAlertDialog(String title, String message) {
         Delivery dialog;
-        if("".equals(title)){
+        if ("".equals(title)) {
             dialog = PostOffice.newMail(getActivity())
                     .setCanceledOnTouchOutside(true)
                     .setCancelable(true)
@@ -513,7 +570,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
                             dialog.dismiss();
                         }
                     }).show(getFragmentManager());
-        }else {
+        } else {
             dialog = PostOffice.newMail(getActivity())
                     .setTitle(title)
                     .setCanceledOnTouchOutside(true)
@@ -533,9 +590,10 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
     /**
      * 显示进度对话框
+     *
      * @param message
      */
-    public Delivery showProgressDialog(String message){
+    public Delivery showProgressDialog(String message) {
         Delivery dialog = PostOffice.newMail(getActivity())
                 .setDesign(Design.MATERIAL_LIGHT)
                 .setThemeColor(R.color.dialogColor)
@@ -658,14 +716,14 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     }
 
 
-    class MyHandler extends Handler{
+    class MyHandler extends Handler {
         private HandlerCallBack handlerCallBack;
 
-        public MyHandler(){
+        public MyHandler() {
             super();
         }
 
-        public MyHandler(HandlerCallBack handlerCallBack){
+        public MyHandler(HandlerCallBack handlerCallBack) {
             this.handlerCallBack = handlerCallBack;
         }
 
@@ -674,13 +732,13 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
             handlerCallBack.executeMessage(msg);
         }
 
-        public void setHandlerCallBack(HandlerCallBack handlerCallBack){
+        public void setHandlerCallBack(HandlerCallBack handlerCallBack) {
             this.handlerCallBack = handlerCallBack;
         }
 
     }
 
-    private interface HandlerCallBack{
+    private interface HandlerCallBack {
         public void executeMessage(Message message);
     }
 }

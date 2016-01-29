@@ -9,8 +9,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,6 +184,26 @@ public class FileTools {
 
 
     /**
+     * 按照文件名称进行排序
+     *
+     * @param isIncreased 升序？
+     * @return
+     */
+    public Comparator<FileItem> sortByName(final boolean isIncreased) {
+        return new Comparator<FileItem>() {
+            @Override
+            public int compare(FileItem lhs, FileItem rhs) {
+                if (isIncreased) {
+                    return lhs.getName().compareToIgnoreCase(rhs.getName());
+                } else {
+                    return -(lhs.getName().compareToIgnoreCase(rhs.getName()));
+                }
+
+            }
+        };
+    }
+
+    /**
      * 返回根路径
      *
      * @param path
@@ -199,38 +222,37 @@ public class FileTools {
         }
     }
 
-
-
-    public Comparator<FileItem> increaseNameSort() {
-        return new Comparator<FileItem>() {
-            @Override
-            public int compare(FileItem lhs, FileItem rhs) {
-                return lhs.getName().compareToIgnoreCase(rhs.getName());
-            }
-        };
-    }
-
-    public Comparator<FileItem> decreaseNameSort() {
-        return new Comparator<FileItem>() {
-            @Override
-            public int compare(FileItem lhs, FileItem rhs) {
-                return -(lhs.getName().compareToIgnoreCase(rhs.getName()));
-            }
-        };
-    }
-
     /**
-     * 按照文件大小从大到小排序
+     * 按照文件大小进行排序
      *
+     * @param isIncreased 从大到小？
      * @return
      */
-    public Comparator<FileItem> sizeSort() {
+    public Comparator<FileItem> sortBySize(final boolean isIncreased) {
         return new Comparator<FileItem>() {
             @Override
             public int compare(FileItem lhs, FileItem rhs) {
-                long lhsize = lhs.getSize() == "" ? 0 : Integer.valueOf(lhs.getSize());
-                long rhsize = rhs.getSize() == "" ? 0 : Integer.valueOf(rhs.getSize());
-                return lhsize > rhsize ? 1 : 0;
+                File lhsFile = lhs.getFile();
+                File rhsFile = rhs.getFile();
+                BigInteger lhsSize = BigInteger.valueOf(Long.MAX_VALUE);
+                BigInteger rhsSize = BigInteger.valueOf(Long.MAX_VALUE);
+
+                //如果是文件夹的话，按照文件夹内的文件数量排序
+                if (lhsFile.isDirectory()) {
+                    lhsSize = lhsSize.add(new BigInteger(lhsFile.list().length + ""));
+                } else {
+                    lhsSize = BigInteger.valueOf(lhsFile.length());
+                }
+                if (rhsFile.isDirectory()) {
+                    rhsSize = rhsSize.add(new BigInteger(rhsFile.list().length + ""));
+                } else {
+                    rhsSize = BigInteger.valueOf(rhsFile.length());
+                }
+                if (isIncreased) {
+                    return lhsSize.compareTo(rhsSize);
+                } else {
+                    return -lhsSize.compareTo(rhsSize);
+                }
             }
         };
     }
@@ -339,16 +361,24 @@ public class FileTools {
      * @param folderPath
      * @return boolean
      */
-    public boolean newFolder(String folderPath) throws Exception {
-        String filePath = folderPath;
-        filePath = filePath.toString();
-        File myFilePath = new File(filePath);
-        if (!myFilePath.exists()) {
-            if (!myFilePath.mkdir()) {
+    public boolean newFolder(String folderPath, final String folderName) {
+        File file = new File(folderPath);
+        if (!file.exists()) {
+            return false;
+        } else {
+            String[] strings = file.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String filename) {
+                    return filename.equals(folderName);
+                }
+            });
+            if (strings.length > 0) {
                 return false;
+            } else {
+                File newFolder = new File(folderPath + File.separator + folderName);
+                return newFolder.mkdir();
             }
         }
-        return true;
     }
 
 
@@ -469,6 +499,7 @@ public class FileTools {
 
     /**
      * 获得一个文件夹的中的所有孩子的内容
+     *
      * @param path
      * @return
      */
@@ -496,16 +527,17 @@ public class FileTools {
 
     /**
      * 获得一个文件的详细信息
+     *
      * @param path
      * @return
      * @throws Exception
      */
-    public String getFileDetailInfo(String path) throws Exception{
+    public String getFileDetailInfo(String path) throws Exception {
         File file = new File(path);
         StringBuffer detailInfo = new StringBuffer();
-        if(!file.exists()){
-            throw  new Exception("文件不存在!");
-        }else{
+        if (!file.exists()) {
+            throw new Exception("文件不存在!");
+        } else {
             detailInfo.append("文件名称: \t" + file.getName() + "\n");
             detailInfo.append("文件种类: \t" + fileType(file.getName()) + "\n");
             detailInfo.append("隐藏文件: \t" + (file.isHidden() ? "是" : "否") + "\n");
@@ -522,6 +554,7 @@ public class FileTools {
 
     /**
      * 获得显示List的需要的一些文件信息
+     *
      * @param path
      * @return
      */

@@ -1,24 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/action_new_folder"
-        app:showAsAction="never"
-        android:title="新建文件夹" />
+        android:id="@+id/menu_new_folder"
+        android:title="新建文件夹"
+        app:showAsAction="never" />
     <item
-        android:id="@+id/action_refresh"
-        app:showAsAction="never"
-        android:title="刷新" />
+        android:id="@+id/menu_refresh"
+        android:title="刷新"
+        app:showAsAction="never" />
+
+
     <item
-        android:id="@+id/action_sort"
-        app:showAsAction="never"
-        android:title="排序" />
-    <!--<item-->
-        <!--android:id="@+id/action_select_all"-->
-        <!--app:showAsAction="never"-->
-        <!--android:title="全选" />-->
+        android:id="@+id/menu_sort"
+        android:title="排序"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/menu_name_decrease"
+                android:title="名称降序"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/menu_name_increase"
+                android:title="名称升序"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/menu_size_decrease"
+                android:title="大小降序"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/menu_size_increase"
+                android:title="大小升序"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+
     <item
-        android:id="@+id/action_exit"
-        app:showAsAction="never"
-        android:title="退出" />
+        android:id="@+id/menu_exit"
+        android:title="退出"
+        app:showAsAction="never" />
+
 </menu>
