@@ -80,7 +80,7 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
     /**
      * 浏览的历史信息
      */
-    private Stack<HistoryEntity> historyEntities = null;
+    private Stack<HistoryEntity> historyEntities;
 
 
     @Override
@@ -438,12 +438,22 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
 
 
         this.swipeMenuListView = (SwipeMenuListView) root.findViewById(R.id.file_listView);
+
+
+
+
+
         //设置空的View
         this.swipeMenuListView.setEmptyView(this.emptyView);
         this.swipeMenuListView.setOnItemClickListener(this);
         this.swipeMenuListView.setOnItemLongClickListener(this);
 
         this.fileAdapter = new FileAdapter(getActivity(), this.fileItems);
+
+
+        View bottom = inflater.inflate(R.layout.bottom_button, container, false);
+        this.swipeMenuListView.addFooterView(bottom);
+
         this.createAnimationAdapter(this.swipeMenuListView, fileAdapter);
 
         SwipeMenuCreator creator = this.createSwipeMenuCreator(getActivity(), new int[][]{{R.drawable.ic_delete_dark, Color.rgb(0xF9, 0x3F, 0x25)},
@@ -579,9 +589,15 @@ public class FileExplorerFragment extends Fragment implements AdapterView.OnItem
         if (currentDir != null) {
             FileItem fileItem = this.fileItems.get(0);
             this.fileItems.remove(0);
+            this.currentOrder.comparator = comparator;
             Collections.sort(this.fileItems, comparator);
             this.fileItems.add(0, fileItem);
             this.fileAdapter.notifyDataSetChanged();
+
+            //因为顺序发生了改变，原来存储的历史位置无效了
+            for(HistoryEntity historyEntity : this.historyEntities){
+                historyEntity.scrollItem = 0;
+            }
         }
     }
 
