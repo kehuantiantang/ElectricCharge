@@ -40,6 +40,8 @@ public class QuickReturnListViewOnScrollListener implements AbsListView.OnScroll
     }
     // endregion
 
+    
+
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         // apply another list' s on scroll listener

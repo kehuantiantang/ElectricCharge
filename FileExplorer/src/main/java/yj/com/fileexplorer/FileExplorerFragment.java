@@ -33,6 +33,9 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.gc.materialdesign.views.Button;
+import com.gc.materialdesign.views.ButtonIcon;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.SwingLeftInAnimationAdapter;
 import com.r0adkll.postoffice.PostOffice;
@@ -45,7 +48,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -68,11 +73,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
 
-    //ListView的滚动监听事件
-    private QuickReturnListViewOnScrollListener scrollListener;
-
-    private View footer;
-
 
     /**
      * 保存下来，按照需要隐藏一些menu
@@ -90,6 +90,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      * 浏览的历史信息
      */
     private Stack<HistoryEntity> historyEntities;
+
+    private Map<String, FooterViewHolder> footerViewHolderMap;
 
 
     @Override
@@ -186,9 +188,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 滑动，并点击了其中的一个按钮的触发事件
+     *
      * @param position 第几个Item
-     * @param menu 点击的swipe的Menu
-     * @param index 第几个按钮
+     * @param menu     点击的swipe的Menu
+     * @param index    第几个按钮
      * @return true 返回已经进行了操作
      */
     @Override
@@ -200,12 +203,12 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         switch (index) {
             //delete
             case 0:
-                final Delivery dialog = showProgressDialog("删除中.....");
+                final Delivery deleteDialog = showProgressDialog("删除中.....");
 
                 this.myHandler.setHandlerCallBack(new HandlerCallBack() {
                     @Override
                     public void executeMessage(Message message) {
-                        dialog.dismiss();
+                        deleteDialog.dismiss();
                         if (!(boolean) message.obj) {
                             showAlertDialog("警告", "删除 " + file.getName() + " 失败");
                         } else {
@@ -226,13 +229,20 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 break;
             //copy
             case 1:
-                //TODO 一个选择复制路径
-                showProgressDialog("正在复制文件");
-//                fileTools.copyFile()
+                showFooter("confirm", true);
+//                //TODO 一个选择复制路径
+//                final Delivery copyDialog = showProgressDialog("正在复制文件");
+//                this.myHandler.setHandlerCallBack(new HandlerCallBack() {
+//                    @Override
+//                    public void executeMessage(Message message) {
+//
+//                    }
+//                });
                 break;
             //share
             case 2:
                 fileTools.shareFile(file);
+                showFooter("operate", true);
                 break;
             default:
 
@@ -259,10 +269,22 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if(id == R.id.cut_cancel_buttonRectangle){
+        if (id == R.id.cancel_buttonRectangle) {
             Log.e(TAG, "cancel");
-        }else if(id == R.id.cut_confirm_buttonRectangle){
+        } else if (id == R.id.confirm_buttonRectangle) {
             Log.e(TAG, "confirm");
+        }else if(id == R.id.button_operation_delete){
+            Log.e(TAG, "button_operation_delete");
+        }else if(id == R.id.button_operation_copy){
+            Log.e(TAG, "button_operation_copy");
+        }else if(id == R.id.button_operation_move){
+            Log.e(TAG, "button_operation_move");
+        }else if(id == R.id.button_operation_send){
+            Log.e(TAG, "button_operation_send");
+        }else if(id == R.id.button_operation_cancel){
+            Log.e(TAG, "button_operation_cancel");
+        }else{
+            Log.e(TAG, "onClick");
         }
     }
 
@@ -425,11 +447,24 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         this.fileItems = new ArrayList<>();
 
         this.currentOrder = new CurrentOrder();
+
+        this.footerViewHolderMap = new HashMap<>();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    /**
+     * 存储需要经常使用的View
+     */
+    static class FooterViewHolder {
+        View footer;
+        Map<Integer, Button> button = new HashMap<>();
+        QuickReturnListViewOnScrollListener scrollListener;
+    }
+
+
+    /**
+     * 注册系统的关于SDCard的广播监听
+     */
+    private void registerReceiver() {
         if (!receiverRegistered) {
             receiverRegistered = true;
             IntentFilter filter = new IntentFilter();
@@ -450,6 +485,64 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             //注册在这个的Receiver中监听
             getActivity().registerReceiver(receiver, filter);
         }
+    }
+
+    /**
+     * 初始化系统需要的ViewHolder
+     * @param root
+     */
+    private void initFooterViewHolder(View root){
+        //获得footer的高度
+        int footerHeight = getActivity().getResources().getDimensionPixelSize(R.dimen.footer_height);
+
+        FooterViewHolder confirmFooterViewHolder = new FooterViewHolder();
+
+        //其中的按钮
+        int[] confirmButtonIds = {R.id.confirm_buttonRectangle, R.id.confirm_buttonRectangle};
+        for(int id : confirmButtonIds){
+            ButtonRectangle button = (ButtonRectangle) root.findViewById(id);
+            button.setOnClickListener(this);
+            confirmFooterViewHolder.button.put(id, button);
+        }
+        View confirmFooter = root.findViewById(R.id.confirm_bar);
+        confirmFooterViewHolder.footer = confirmFooter;
+
+        //设置onScrollListener监听事件
+        QuickReturnListViewOnScrollListener confirmListener = new QuickReturnListViewOnScrollListener.Builder(QuickReturnViewType.FOOTER)
+                .footer(confirmFooter)
+                .minFooterTranslation(footerHeight)
+                .build();
+        confirmFooterViewHolder.scrollListener = confirmListener;
+
+        this.footerViewHolderMap.put("confirm", confirmFooterViewHolder);
+
+
+        FooterViewHolder operateFooterViewHolder = new FooterViewHolder();
+        View operateFooter = root.findViewById(R.id.operation_bar);
+        operateFooterViewHolder.footer = operateFooter;
+
+        int[] operateButtonIds = {R.id.button_operation_delete, R.id.button_operation_copy, R.id.button_operation_move, R.id.button_operation_send, R.id.button_operation_cancel};
+        for(int id : operateButtonIds){
+            ButtonIcon button = (ButtonIcon) root.findViewById(id);
+            button.setOnClickListener(this);
+            operateFooterViewHolder.button.put(id, button);
+        }
+
+        //设置onScrollListener监听事件
+        QuickReturnListViewOnScrollListener operateListener = new QuickReturnListViewOnScrollListener.Builder(QuickReturnViewType.FOOTER)
+                .footer(operateFooter)
+                .minFooterTranslation(footerHeight)
+                .build();
+        operateFooterViewHolder.scrollListener = operateListener;
+
+        this.footerViewHolderMap.put("operate", operateFooterViewHolder);
+    }
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        registerReceiver();
 
 
         View root = inflater.inflate(R.layout.file_explorer_list, container, false);
@@ -458,35 +551,18 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         this.swipeMenuListView = (SwipeMenuListView) root.findViewById(R.id.file_listView);
 
-
         //设置空的View
         this.swipeMenuListView.setEmptyView(this.emptyView);
         this.swipeMenuListView.setOnItemClickListener(this);
         this.swipeMenuListView.setOnItemLongClickListener(this);
 
-        this.footer = root.findViewById(R.id.cutting_operation_bar);
-
-        //两个按钮的监听事件
-        (footer.findViewById(R.id.cut_confirm_buttonRectangle)).setOnClickListener(this);
-        (footer.findViewById(R.id.cut_cancel_buttonRectangle)).setOnClickListener(this);
-
-
-        //获得footer的高度
-        int footerHeight = getActivity().getResources().getDimensionPixelSize(R.dimen.footer_height);
-        //设置onScrollListener监听事件
-        scrollListener = new QuickReturnListViewOnScrollListener.Builder(QuickReturnViewType.FOOTER)
-                .footer(footer)
-                .minFooterTranslation(footerHeight)
-                .build();
-
-        //设置好，但是不显示
-        showFooter(true);
-
-        this.swipeMenuListView.setOnScrollListener(scrollListener);
 
         this.fileAdapter = new FileAdapter(getActivity(), this.fileItems);
 
+        initFooterViewHolder(root);
+
         this.createAnimationAdapter(this.swipeMenuListView, fileAdapter);
+
 
         SwipeMenuCreator creator = this.createSwipeMenuCreator(getActivity(), new int[][]{{R.drawable.ic_delete_dark, Color.rgb(0xF9, 0x3F, 0x25)},
                 {R.drawable.ic_copy_dark, Color.rgb(0xEA, 0xff, 0x56)},
@@ -501,11 +577,30 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         return root;
     }
 
-    private void showFooter(boolean visible){
-        scrollListener.setScrollListenerEnabled(visible);
-        if(footer != null){
-            footer.setVisibility(visible ? View.VISIBLE : View.GONE);
+    /**
+     * 显示Footer
+     * @param key 要显示哪个Footer
+     * @param visible 是否可见
+     */
+    private void showFooter(String key, boolean visible) {
+        FooterViewHolder footerViewHolder = footerViewHolderMap.get(key);
+        if(footerViewHolder != null){
+            footerViewHolder.scrollListener.setScrollListenerEnabled(visible);
+            this.swipeMenuListView.setOnScrollListener(footerViewHolder.scrollListener);
+            footerViewHolder.footer.setVisibility(visible ? View.VISIBLE : View.GONE);
+
+            //隐藏其他的
+            if (visible) {
+                for (String string : footerViewHolderMap.keySet()) {
+                    if (!string.equalsIgnoreCase(key)) {
+                        footerViewHolderMap.get(string).footer.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }else{
+            Log.e(TAG, "Key Error");
         }
+
     }
 
 
@@ -622,6 +717,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 对显示的File文件夹按照比较器要求排序
+     *
      * @param comparator 比较器
      */
     private void sortItems(Comparator<FileItem> comparator) {
@@ -635,7 +731,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             this.fileAdapter.notifyDataSetChanged();
 
             //因为顺序发生了改变，原来存储的历史位置无效了
-            for(HistoryEntity historyEntity : this.historyEntities){
+            for (HistoryEntity historyEntity : this.historyEntities) {
                 historyEntity.scrollItem = 0;
             }
         }
@@ -643,6 +739,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 设置回调事件
+     *
      * @param explorerCallBack 设置Handler的回调事件
      */
     public void setExplorerCallBack(ExplorerCallBack explorerCallBack) {
@@ -652,7 +749,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 显示提示框
-     * @param title 标题
+     *
+     * @param title   标题
      * @param message 信息
      */
     public Delivery showAlertDialog(String title, String message) {
@@ -696,6 +794,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         Delivery dialog = PostOffice.newMail(getActivity())
                 .setDesign(Design.MATERIAL_LIGHT)
                 .setThemeColor(R.color.dialogColor)
+                .setCanceledOnTouchOutside(true)
                 .setStyle(new ProgressStyle.Builder(getActivity())
                         .setProgressStyle(ProgressStyle.NORMAL)
                         .setProgressMessage(message)
@@ -707,6 +806,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 创建拥有动画效果的ListView适配器
+     *
      * @param swipeMenuListView 需要添加进动画的ListView
      * @param adapter           需要的数据适配器
      * @return 返回一个配置好动画的Adapter
@@ -739,16 +839,17 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 创建滑动的按钮
+     *
      * @param iconAndColors 滑动按钮需要的图标和颜色
-     * @param context 上下文
+     * @param context       上下文
      * @return 返回一个创建好的滑动的creator
      */
     public SwipeMenuCreator createSwipeMenuCreator(final Context context, final int[][] iconAndColors) {
         SwipeMenuCreator swipeMenuCreator = new SwipeMenuCreator() {
             @Override
             public void create(SwipeMenu menu) {
-                for(int[] tmp : iconAndColors){
-                    if(tmp.length != 2){
+                for (int[] tmp : iconAndColors) {
+                    if (tmp.length != 2) {
                         throw new IllegalArgumentException("The Icon and Color must set !");
                     }
                     // create "info" item
@@ -777,18 +878,19 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
          *
          * @param title 标题
          */
-         void updateTitle(String title);
+        void updateTitle(String title);
 
         /**
          * 选择的文件的路径
          *
          * @param path 地址
          */
-         void selectedFile(String path);
+        void selectedFile(String path);
     }
 
     /**
      * 点击了返回键，如果不是根目录就不退出
+     *
      * @return true 调用Activity中的系统的onBackPressed操作
      */
     public boolean onBackPressed() {
