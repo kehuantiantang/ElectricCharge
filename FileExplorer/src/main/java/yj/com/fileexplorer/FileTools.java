@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -39,7 +38,7 @@ public class FileTools {
     /**
      * 操作
      */
-    public enum OperateType{
+    public enum OperateType {
         COPY("复制"),
         CUT("粘贴"),
         DELETE("删除"),
@@ -48,7 +47,8 @@ public class FileTools {
         EMPTY("空");
 
         private String value;
-        private OperateType(String value){
+
+        private OperateType(String value) {
             this.value = value;
         }
 
@@ -247,24 +247,24 @@ public class FileTools {
 
     /**
      * 按照文件的时间进行排序
+     *
      * @param isIncreased 新的在前？
      * @return
      */
-    public static Comparator<FileItem> sortByTime(final boolean isIncreased){
+    public static Comparator<FileItem> sortByTime(final boolean isIncreased) {
         return new Comparator<FileItem>() {
             @Override
             public int compare(FileItem lhs, FileItem rhs) {
                 Long lhsTime = lhs.getFile().lastModified();
                 Long rhsTime = rhs.getFile().lastModified();
-                if(isIncreased) {
+                if (isIncreased) {
                     return lhsTime.compareTo(rhsTime);
-                }else{
+                } else {
                     return -lhsTime.compareTo(rhsTime);
                 }
             }
         };
     }
-
 
 
     /**
@@ -341,80 +341,27 @@ public class FileTools {
         return "Free " + this.formatFileSize(free) + " of " + this.formatFileSize(total);
     }
 
+
     /**
-     * 删除文件
-     *
-     * @param filePathAndName String 文件路径及名称 如c:/fqf.txt
-     * @return boolean
+     * 删除文件，目录或者是文件都可以
+     * @param filePath 删除的地址
+     * @return
      */
-    public boolean delFile(String filePathAndName) {
-        File delFile;
-        try {
-            delFile = new File(filePathAndName);
-            if (delFile.isDirectory()) {
-                delFolder(filePathAndName);
-            } else {
-                delFile.delete();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public boolean delete(String filePath){
+        File delFile = new File(filePath);
+        if(!delFile.exists()){
             return false;
-        }
-        return true;
-    }
-
-    /**
-     * 删除文件夹里面的所有文件
-     *
-     * @param path String 文件夹路径 如 c:/fqf
-     */
-    public void delAllFile(String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            return;
-        }
-        if (!file.isDirectory()) {
-            return;
-        }
-        String[] tempList = file.list();
-        File temp;
-        for (int i = 0; i < tempList.length; i++) {
-            if (path.endsWith(File.separator)) {
-                temp = new File(path + tempList[i]);
-            } else {
-                temp = new File(path + File.separator + tempList[i]);
+        }else{
+            if(delFile.isDirectory()){
+                String[] children = delFile.list();
+                for(String child : children){
+                    delete(delFile.getAbsolutePath() + File.separator + child);
+                }
             }
-            if (temp.isFile()) {
-                temp.delete();
-            }
-            if (temp.isDirectory()) {
-                delAllFile(path + File.separator + " " + tempList[i]);// 先删除文件夹里面的文件
-                delFolder(path + File.separator + " " + tempList[i]);// 再删除空文件夹
-            }
+            return delFile.delete();
         }
     }
 
-
-    /**
-     * 删除文件夹
-     *
-     * @param folderPath String 文件夹路径及名称 如c:/fqf
-     * @return String
-     */
-    public boolean delFolder(String folderPath) {
-        try {
-            delAllFile(folderPath); // 删除完里面所有内容
-            String filePath = folderPath;
-            filePath = filePath.toString();
-            java.io.File myFilePath = new java.io.File(filePath);
-            myFilePath.delete(); // 删除空文件夹
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
 
 
     /**
@@ -423,23 +370,13 @@ public class FileTools {
      * @param folderPath
      * @return boolean
      */
-    public boolean newFolder(String folderPath, final String folderName) {
+    public boolean newFolder(String folderPath, String folderName) {
         File file = new File(folderPath);
         if (!file.exists()) {
             return false;
         } else {
-            String[] strings = file.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String filename) {
-                    return filename.equals(folderName);
-                }
-            });
-            if (strings.length > 0) {
-                return false;
-            } else {
-                File newFolder = new File(folderPath + File.separator + folderName);
-                return newFolder.mkdir();
-            }
+            File newFolder = new File(folderPath + File.separator + folderName);
+            return newFolder.mkdir();
         }
     }
 
@@ -453,21 +390,17 @@ public class FileTools {
      */
     public boolean copyFile(String oldPath, String newPath) {
         try {
-            int byteSum = 0;
             int byteRead;
             File oldFile = new File(oldPath);
-            if (oldFile.isDirectory()) {
-                return copyFolder(oldPath, newPath);
-            }
+
             InputStream inStream = null; // 读入原文件
             if (oldFile.exists()) { // 文件存在时
                 inStream = new FileInputStream(oldPath);
             }
+
             FileOutputStream fs = new FileOutputStream(newPath);
             byte[] buffer = new byte[1024];
             while ((byteRead = inStream.read(buffer)) != -1) {
-                byteSum += byteRead; // 字节数 文件大小
-                System.out.println(byteSum);
                 fs.write(buffer, 0, byteRead);
             }
             inStream.close();
@@ -482,79 +415,53 @@ public class FileTools {
     }
 
     /**
-     * 复制整个文件夹内容
-     *
-     * @param oldPath String 原文件路径
-     * @param newPath String 目的文件路径
-     * @return boolean 拷贝文件是否成功
+     * 复制文件
+     * @param oldPath 原文件，文件或者是文件夹
+     * @param newPath 必须是文件夹
      */
-    public boolean copyFolder(String oldPath, String newPath) {
-        try {
-            File oldFile = new File(oldPath);
-            if (!oldFile.exists()) {
-               oldFile.mkdirs();
-            }
-            newPath = newPath  + File.separator  + oldFile.getName();
-            File newFile = new File(newPath);
-
-            // 如果文件夹不存在 则建立新文件夹
-            if(!newFile.exists()){
+    public boolean copy(String oldPath, String newPath) {
+        File oldFile = new File(oldPath);
+        File target = new File(newPath);
+        if (!oldFile.exists() || !target.exists() || !target.isDirectory()) {
+            return false;
+        } else {
+            boolean flag = true;
+            if (oldFile.isDirectory()) {
+                String oldFileName = oldFile.getName();
+                newPath = newPath + File.separator + oldFileName;
+                File newFile = new File(newPath);
                 newFile.mkdirs();
-            }
-
-            File[] childFiles = oldFile.listFiles();
-            for(File child : childFiles){
-                if(child.isDirectory()){
-                    copyFolder(oldPath + File.separator + child.getName(), child.getAbsolutePath());
-                }else{
-                    FileInputStream input = new FileInputStream(child);
-                    FileOutputStream output = new FileOutputStream(newPath
-                            + "/ " + (child.getName()).toString());
-                    byte[] b = new byte[1024 * 5];
-                    int len;
-                    while ((len = input.read(b)) != -1) {
-                        output.write(b, 0, len);
+                File[] children = oldFile.listFiles();
+                for(File child : children){
+                    if(child.isDirectory()){
+                        flag = copy(child.getAbsolutePath(), newPath);
+                        if(!flag){
+                            break;
+                        }
+                    }else{
+                        flag = copyFile(child.getAbsolutePath(), newPath + File.separator + child.getName());
                     }
-                    output.flush();
-                    output.close();
-                    input.close();
                 }
+                return flag;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            return copyFile(oldPath, newPath + File.separator + oldFile.getName());
+        }
+    }
+
+    /**
+     * 剪切文件
+     * @param oldPath 原文件地址
+     * @param newPath 目的文件地址
+     * @return
+     */
+    public boolean cut(String oldPath, String newPath){
+        if(!copy(oldPath, newPath)){
+            return false;
+        }
+        if(!delete(oldPath)){
             return false;
         }
         return true;
-    }
-
-
-    /**
-     * 移动文件到指定目录
-     *
-     * @param oldPath String 如：c:/fqf.txt
-     * @param newPath String 如：d:/fqf.txt
-     */
-    public boolean moveFile(String oldPath, String newPath) {
-        boolean flag = true;
-        if(!copyFile(oldPath, newPath)){
-            flag = false;
-        }
-        if(!delFile(oldPath)){
-            flag = false;
-        }
-        return flag;
-    }
-
-
-    /**
-     * 移动文件夹到指定目录
-     *
-     * @param oldPath String 如：c:/fqf
-     * @param newPath String 如：d:/fqf
-     */
-    public void moveFolder(String oldPath, String newPath) {
-        copyFolder(oldPath, newPath);
-        delFolder(oldPath);
     }
 
     /**

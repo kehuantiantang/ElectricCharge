@@ -225,7 +225,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     @Override
                     public void run() {
                         Message message = new Message();
-                        message.obj = fileTools.delFile(file.getAbsolutePath());
+                        message.obj = fileTools.delete(file.getAbsolutePath());
                         myHandler.sendMessage(message);
                     }
                 }).start();
@@ -233,11 +233,11 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             //copy
             case 1:
                 //显示footer
-                showFooter("confirm", true, FileTools.OperateType.COPY);
+                showFooter("confirm", true, FileTools.OperateType.CUT);
                 //添加文件
                 this.operateFiles.clear();
                 this.operateFiles.add(file);
-                this.operateType = FileTools.OperateType.COPY;
+                this.operateType = FileTools.OperateType.CUT;
 
                 break;
             //share
@@ -297,7 +297,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     public void run() {
                         StringBuffer log = new StringBuffer();
                         for (File file : operateFiles) {
-                            if (!fileTools.copyFile(file.getAbsolutePath(), targetPath)) {
+                            if (!fileTools.copy(file.getAbsolutePath(), targetPath)) {
                                 log.append(file.getName() + "\n");
                             }
                         }
@@ -309,34 +309,34 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
             }else if(this.operateType == FileTools.OperateType.CUT){
                 final Delivery cutDialog = showProgressDialog("正在粘贴.......");
-                myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        StringBuffer log = new StringBuffer();
-                        if(operateFiles != null) {
-                            for (File file : operateFiles) {
-                                if (!fileTools.moveFile(file.getAbsolutePath(), targetPath)) {
-                                    log.append(file.getName() + "\n");
-                                }
-                            }
-                        }
-                        Message message = new Message();
-                        message.obj = log.toString();
-                    }
-                });
 
                 myHandler.setHandlerCallBack(new HandlerCallBack() {
                     @Override
                     public void executeMessage(Message message) {
-
                         String log = message.obj.toString();
                         if (!"".equals(log)) {
                             showAlertDialog("失败", log);
                         }
+                        operateFiles.clear();
                         listFiles(currentDir);
                         cutDialog.dismiss();
                     }
                 });
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        StringBuffer log = new StringBuffer();
+                        for (File file : operateFiles) {
+                            if (!fileTools.cut(file.getAbsolutePath(), targetPath)) {
+                                log.append(file.getName() + "\n");
+                            }
+                        }
+                        Message message = new Message();
+                        message.obj = log;
+                        myHandler.sendMessage(message);
+                    }
+                }).start();
             }else{
                 Log.e(TAG, "Operate type error!");
             }
@@ -777,15 +777,29 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                                 .setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL)
                                 .setOnTextAcceptedListener(new EditTextStyle.OnTextAcceptedListener() {
                                     @Override
-                                    public void onAccepted(String text) {
-                                        if (!fileTools.newFolder(currentDir.getAbsolutePath(), "".equals(text) ? "新建文件夹" : text)) {
-                                            showAlertDialog("", "文件重名，创建文件夹失败");
-                                        } else {
-                                            listFiles(currentDir);
-                                        }
+                                    public void onAccepted(final String text) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Message message = new Message();
+                                                message.obj = fileTools.newFolder(currentDir.getAbsolutePath(), "".equals(text) ? "新建文件夹" : text);
+                                                myHandler.sendMessage(message);
+                                            }
+                                        }).start();
                                     }
                                 }).build())
                         .build();
+
+                myHandler.setHandlerCallBack(new HandlerCallBack() {
+                    @Override
+                    public void executeMessage(Message message) {
+                        if((boolean)message.obj){
+                            listFiles(currentDir);
+                        }else{
+                            showAlertDialog("", "文件重名，创建文件夹失败");
+                        }
+                    }
+                });
                 delivery.show(getFragmentManager());
             }
             return true;
