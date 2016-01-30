@@ -3,7 +3,6 @@ package yj.com.fileexplorer;
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +13,6 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +35,29 @@ public class FileTools {
     private static Map<String, List<String>> suffixMap;
     private String TAG = getClass().getSimpleName();
     private boolean showHideFile = false;
+
+    /**
+     * 操作
+     */
+    public enum OperateType{
+        COPY("复制"),
+        CUT("粘贴"),
+        DELETE("删除"),
+        NEW_FOLDER("新建文件夹"),
+        SHARE("分享"),
+        EMPTY("空");
+
+        private String value;
+        private OperateType(String value){
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
 
     /**
      * 初始化需要查询的后缀名的map数组
@@ -463,27 +484,32 @@ public class FileTools {
     /**
      * 复制整个文件夹内容
      *
-     * @param oldPath String 原文件路径 如：c:/fqf
-     * @param newPath String 复制后路径 如：f:/fqf/ff
+     * @param oldPath String 原文件路径
+     * @param newPath String 目的文件路径
      * @return boolean 拷贝文件是否成功
      */
     public boolean copyFolder(String oldPath, String newPath) {
         try {
-            (new File(newPath)).mkdirs(); // 如果文件夹不存在 则建立新文件夹
             File oldFile = new File(oldPath);
-            String[] childrenFilePaths = oldFile.list();
-            File temp;
-            for (String path : childrenFilePaths) {
-                if (oldPath.endsWith(File.separator)) {
-                    temp = new File(oldPath + path);
-                } else {
-                    temp = new File(oldPath + File.separator + path);
-                }
+            if (!oldFile.exists()) {
+               oldFile.mkdirs();
+            }
+            newPath = newPath  + File.separator  + oldFile.getName();
+            File newFile = new File(newPath);
 
-                if (temp.isFile()) {
-                    FileInputStream input = new FileInputStream(temp);
+            // 如果文件夹不存在 则建立新文件夹
+            if(!newFile.exists()){
+                newFile.mkdirs();
+            }
+
+            File[] childFiles = oldFile.listFiles();
+            for(File child : childFiles){
+                if(child.isDirectory()){
+                    copyFolder(oldPath + File.separator + child.getName(), child.getAbsolutePath());
+                }else{
+                    FileInputStream input = new FileInputStream(child);
                     FileOutputStream output = new FileOutputStream(newPath
-                            + "/ " + (temp.getName()).toString());
+                            + "/ " + (child.getName()).toString());
                     byte[] b = new byte[1024 * 5];
                     int len;
                     while ((len = input.read(b)) != -1) {
@@ -492,9 +518,6 @@ public class FileTools {
                     output.flush();
                     output.close();
                     input.close();
-                }
-                if (temp.isDirectory()) {// 如果是子文件夹
-                    copyFolder(oldPath + File.separator + " " + path, newPath + File.separator + " " + path);
                 }
             }
         } catch (Exception e) {
@@ -511,9 +534,15 @@ public class FileTools {
      * @param oldPath String 如：c:/fqf.txt
      * @param newPath String 如：d:/fqf.txt
      */
-    public void moveFile(String oldPath, String newPath) {
-        copyFile(oldPath, newPath);
-        delFile(oldPath);
+    public boolean moveFile(String oldPath, String newPath) {
+        boolean flag = true;
+        if(!copyFile(oldPath, newPath)){
+            flag = false;
+        }
+        if(!delFile(oldPath)){
+            flag = false;
+        }
+        return flag;
     }
 
 

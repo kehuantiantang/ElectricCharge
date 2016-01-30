@@ -1,8 +1,5 @@
 package com.gc.materialdesign.views;
 
-import com.gc.materialdesign.R;
-import com.gc.materialdesign.utils.Utils;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -13,9 +10,10 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.gc.materialdesign.R;
+import com.gc.materialdesign.utils.Utils;
+
 public class ButtonRectangle extends Button {
-	
-	TextView textButton;
 	
 	int paddingTop,paddingBottom, paddingLeft, paddingRight;
 	

@@ -98,13 +98,13 @@
                 materialdesign:iconDrawable="@drawable/ic_copy_dark" />
 
             <com.gc.materialdesign.views.ButtonIcon
-                android:id="@+id/button_operation_move"
+                android:id="@+id/button_operation_cut"
                 style="@style/BottomButtonStyle"
                 android:background="@color/colorPrimaryLight"
                 materialdesign:iconDrawable="@drawable/ic_cut_dark" />
 
             <com.gc.materialdesign.views.ButtonIcon
-                android:id="@+id/button_operation_send"
+                android:id="@+id/button_operation_share"
                 style="@style/BottomButtonStyle"
                 android:background="@color/colorPrimaryLight"
                 materialdesign:iconDrawable="@drawable/ic_share_dark" />

@@ -73,6 +73,9 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     private LinearLayout emptyView;
     private SwipeMenuListView swipeMenuListView;
 
+    private FileTools.OperateType operateType;
+
+    private List<File> operateFiles;
 
     /**
      * 保存下来，按照需要隐藏一些menu
@@ -218,31 +221,29 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     }
                 });
 
-                this.myHandler.post(new Runnable() {
+               new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Message message = new Message();
                         message.obj = fileTools.delFile(file.getAbsolutePath());
                         myHandler.sendMessage(message);
                     }
-                });
+                }).start();
                 break;
             //copy
             case 1:
-                showFooter("confirm", true);
-//                //TODO 一个选择复制路径
-//                final Delivery copyDialog = showProgressDialog("正在复制文件");
-//                this.myHandler.setHandlerCallBack(new HandlerCallBack() {
-//                    @Override
-//                    public void executeMessage(Message message) {
-//
-//                    }
-//                });
+                //显示footer
+                showFooter("confirm", true, FileTools.OperateType.COPY);
+                //添加文件
+                this.operateFiles.clear();
+                this.operateFiles.add(file);
+                this.operateType = FileTools.OperateType.COPY;
+
                 break;
             //share
             case 2:
                 fileTools.shareFile(file);
-                showFooter("operate", true);
+                showFooter("operate", true, null);
                 break;
             default:
 
@@ -270,19 +271,86 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.cancel_buttonRectangle) {
-            Log.e(TAG, "cancel");
+            this.operateType = FileTools.OperateType.EMPTY;
         } else if (id == R.id.confirm_buttonRectangle) {
-            Log.e(TAG, "confirm");
+            showFooter("confirm", false, null);
+            final String targetPath = currentDir.getAbsolutePath();
+
+            if(this.operateType == FileTools.OperateType.COPY){
+                final Delivery copyDialog = showProgressDialog("正在复制.......");
+
+                myHandler.setHandlerCallBack(new HandlerCallBack() {
+                    @Override
+                    public void executeMessage(Message message) {
+                        String log = message.obj.toString();
+                        if (!"".equals(log)) {
+                            showAlertDialog("失败", log);
+                        }
+                        operateFiles.clear();
+                        listFiles(currentDir);
+                        copyDialog.dismiss();
+                    }
+                });
+
+               new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        StringBuffer log = new StringBuffer();
+                        for (File file : operateFiles) {
+                            if (!fileTools.copyFile(file.getAbsolutePath(), targetPath)) {
+                                log.append(file.getName() + "\n");
+                            }
+                        }
+                        Message message = new Message();
+                        message.obj = log;
+                        myHandler.sendMessage(message);
+                    }
+                }).start();
+
+            }else if(this.operateType == FileTools.OperateType.CUT){
+                final Delivery cutDialog = showProgressDialog("正在粘贴.......");
+                myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        StringBuffer log = new StringBuffer();
+                        if(operateFiles != null) {
+                            for (File file : operateFiles) {
+                                if (!fileTools.moveFile(file.getAbsolutePath(), targetPath)) {
+                                    log.append(file.getName() + "\n");
+                                }
+                            }
+                        }
+                        Message message = new Message();
+                        message.obj = log.toString();
+                    }
+                });
+
+                myHandler.setHandlerCallBack(new HandlerCallBack() {
+                    @Override
+                    public void executeMessage(Message message) {
+
+                        String log = message.obj.toString();
+                        if (!"".equals(log)) {
+                            showAlertDialog("失败", log);
+                        }
+                        listFiles(currentDir);
+                        cutDialog.dismiss();
+                    }
+                });
+            }else{
+                Log.e(TAG, "Operate type error!");
+            }
+            this.operateType = FileTools.OperateType.EMPTY;
         }else if(id == R.id.button_operation_delete){
             Log.e(TAG, "button_operation_delete");
         }else if(id == R.id.button_operation_copy){
-            Log.e(TAG, "button_operation_copy");
-        }else if(id == R.id.button_operation_move){
-            Log.e(TAG, "button_operation_move");
-        }else if(id == R.id.button_operation_send){
-            Log.e(TAG, "button_operation_send");
+            this.operateType = FileTools.OperateType.COPY;
+        }else if(id == R.id.button_operation_cut){
+            this.operateType = FileTools.OperateType.CUT;
+        }else if(id == R.id.button_operation_share){
+            this.operateType = FileTools.OperateType.SHARE;
         }else if(id == R.id.button_operation_cancel){
-            Log.e(TAG, "button_operation_cancel");
+            this.operateType = FileTools.OperateType.EMPTY;
         }else{
             Log.e(TAG, "onClick");
         }
@@ -360,6 +428,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         }
         this.swipeMenuListView.setSwipeEnabled(false);
         fileAdapter.notifyDataSetChanged();
+
+        if(this.operateType != FileTools.OperateType.EMPTY){
+            footerViewHolderMap.get("confirm").button.get(R.id.confirm_buttonRectangle).setEnabled(false);
+        }
     }
 
     /**
@@ -381,6 +453,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      * @return true 代表成功展示子文件夹
      */
     private boolean listFiles(File dir) {
+        footerViewHolderMap.get("confirm").button.get(R.id.confirm_buttonRectangle).setEnabled(true);
+
         //能够滑动显示出按钮
         this.swipeMenuListView.setSwipeEnabled(true);
         if (dir == null) {
@@ -449,6 +523,9 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         this.currentOrder = new CurrentOrder();
 
         this.footerViewHolderMap = new HashMap<>();
+
+        this.operateFiles = new ArrayList<>();
+        this.operateType = FileTools.OperateType.EMPTY;
     }
 
     /**
@@ -498,7 +575,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         FooterViewHolder confirmFooterViewHolder = new FooterViewHolder();
 
         //其中的按钮
-        int[] confirmButtonIds = {R.id.confirm_buttonRectangle, R.id.confirm_buttonRectangle};
+        int[] confirmButtonIds = {R.id.confirm_buttonRectangle, R.id.cancel_buttonRectangle};
         for(int id : confirmButtonIds){
             ButtonRectangle button = (ButtonRectangle) root.findViewById(id);
             button.setOnClickListener(this);
@@ -521,7 +598,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         View operateFooter = root.findViewById(R.id.operation_bar);
         operateFooterViewHolder.footer = operateFooter;
 
-        int[] operateButtonIds = {R.id.button_operation_delete, R.id.button_operation_copy, R.id.button_operation_move, R.id.button_operation_send, R.id.button_operation_cancel};
+        int[] operateButtonIds = {R.id.button_operation_delete, R.id.button_operation_copy, R.id.button_operation_cut, R.id.button_operation_share, R.id.button_operation_cancel};
         for(int id : operateButtonIds){
             ButtonIcon button = (ButtonIcon) root.findViewById(id);
             button.setOnClickListener(this);
@@ -582,13 +659,15 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      * @param key 要显示哪个Footer
      * @param visible 是否可见
      */
-    private void showFooter(String key, boolean visible) {
+    private void showFooter(String key, boolean visible, FileTools.OperateType operateType) {
         FooterViewHolder footerViewHolder = footerViewHolderMap.get(key);
         if(footerViewHolder != null){
             footerViewHolder.scrollListener.setScrollListenerEnabled(visible);
             this.swipeMenuListView.setOnScrollListener(footerViewHolder.scrollListener);
             footerViewHolder.footer.setVisibility(visible ? View.VISIBLE : View.GONE);
-
+            if(operateType != null) {
+                footerViewHolder.button.get(R.id.confirm_buttonRectangle).setText(operateType.toString());
+            }
             //隐藏其他的
             if (visible) {
                 for (String string : footerViewHolderMap.keySet()) {
@@ -794,7 +873,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         Delivery dialog = PostOffice.newMail(getActivity())
                 .setDesign(Design.MATERIAL_LIGHT)
                 .setThemeColor(R.color.dialogColor)
-                .setCanceledOnTouchOutside(true)
                 .setStyle(new ProgressStyle.Builder(getActivity())
                         .setProgressStyle(ProgressStyle.NORMAL)
                         .setProgressMessage(message)
