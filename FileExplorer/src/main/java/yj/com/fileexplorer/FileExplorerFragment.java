@@ -851,7 +851,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            Log.e(TAG, "create");
+            //不允许在root文件夹下面启动
+            if(currentDir == null){
+                return false;
+            }
 
             // actionmode的菜单处理
             MenuInflater inflater = getActivity().getMenuInflater();
@@ -863,7 +866,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            Log.e(TAG, "prepare");
             if (this.mode == null) {
                 this.mode = mode;
             }
@@ -913,7 +915,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Log.e(TAG, "action click");
             int id = item.getItemId();
 
             if (item.getItemId() == R.id.menu_mulSelectState) {
@@ -959,7 +960,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            Log.e(TAG, "destory");
             listView.clearChoices();
             mode = null;
         }
@@ -967,7 +967,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         @Override
         public void onItemCheckedStateChanged(ActionMode mode,
                                               int position, long id, boolean checked) {
-            Log.e(TAG, "item click");
             if (checked) {
                 operateFiles.add(fileItems.get(position).getFile());
             } else {
