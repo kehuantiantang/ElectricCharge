@@ -60,6 +60,37 @@ public abstract class SwipeItemFragment extends Fragment {
      */
     protected abstract void initAdapterAndListData();
 
+    /**
+     * 创建滑动的按钮
+     *
+     * @param iconAndColors 滑动按钮需要的图标和颜色
+     * @param context       上下文
+     * @return 返回一个创建好的滑动的creator
+     */
+    public SwipeMenuCreator createSwipeMenuCreator(final Context context, final int[][] iconAndColors) {
+        SwipeMenuCreator swipeMenuCreator = new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {
+                for (int[] tmp : iconAndColors) {
+                    if (tmp.length != 2) {
+                        throw new IllegalArgumentException("The Icon and Color must set !");
+                    }
+                    // create "info" item
+                    SwipeMenuItem item = new SwipeMenuItem(context);
+                    // set item title
+                    item.setIcon(tmp[0]);
+                    // set item width
+                    item.setWidth(dp2px(56));
+
+                    // set item background
+                    item.setBackground(new ColorDrawable(tmp[1]));
+                    // add to menu
+                    menu.addMenuItem(item);
+                }
+            }
+        };
+        return swipeMenuCreator;
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

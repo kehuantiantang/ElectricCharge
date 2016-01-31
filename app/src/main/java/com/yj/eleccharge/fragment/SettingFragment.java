@@ -53,6 +53,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     private SharedPreferences sharedPreferencese;
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
