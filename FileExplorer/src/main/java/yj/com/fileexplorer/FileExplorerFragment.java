@@ -96,6 +96,9 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     private Map<String, FooterViewHolder> footerViewHolderMap;
 
 
+    private MultipleChoiceModeCallBack multipleChoiceModeCallBack;
+
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position < 0 || position > this.fileItems.size()) {
@@ -237,8 +240,15 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.cancel_buttonRectangle) {
+
+        if (id == R.id.cancel_buttonRectangle || id == R.id.button_operation_cancel) {
+            unSelectedAll();
+            //隐藏footer
+            showFooter("confirm", false, null);
+            showFooter("operate", false, null);
+
             this.operateType = FileTools.OperateType.EMPTY;
+            showFooter("confirm", false, null);
         } else if (id == R.id.confirm_buttonRectangle) {
             showFooter("confirm", false, null);
             final String targetPath = currentDir.getAbsolutePath();
@@ -246,12 +256,12 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         } else if (id == R.id.button_operation_delete) {
             backgroundOperate(null, FileTools.OperateType.DELETE);
-
         } else if (id == R.id.button_operation_copy) {
             //显示footer
             showFooter("confirm", true, FileTools.OperateType.COPY);
-            //添加文件
+
             this.operateType = FileTools.OperateType.COPY;
+
         } else if (id == R.id.button_operation_cut) {
             //显示footer
             showFooter("confirm", true, FileTools.OperateType.CUT);
@@ -259,13 +269,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         } else if (id == R.id.button_operation_share) {
             this.operateType = FileTools.OperateType.SHARE;
-        } else if (id == R.id.button_operation_cancel) {
-            //隐藏footer
-            showFooter("confirm", false, null);
-            showFooter("operate", false, null);
-            //添加文件
-            this.operateFiles.clear();
-            this.operateType = FileTools.OperateType.EMPTY;
         } else {
             Log.e(TAG, "onClick");
         }
@@ -547,7 +550,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         //多选回调事件
-        listView.setMultiChoiceModeListener(new MultipleChoiceModeCallBack());
+        this.multipleChoiceModeCallBack = new MultipleChoiceModeCallBack();
+        listView.setMultiChoiceModeListener(this.multipleChoiceModeCallBack);
 
         listRoots();
         return root;
@@ -914,7 +918,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             mode.setCustomView(mMultiSelectActionBarView);
             ((TextView) mMultiSelectActionBarView.findViewById(R.id.title)).setText("已选择");
 
-            showFooter("operate", true, null);
+
             return true;
         }
 
@@ -926,13 +930,17 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 mode.setCustomView(v);
                 mSelectedCount = (TextView) v.findViewById(R.id.selected_conv_count);
             }
+
+            showFooter("operate", true, null);
             //更新菜单的状态
             MenuItem mItem = menu.findItem(R.id.action_select);
             if (listView.getCheckedItemCount() == fileAdapter.getCount()) {
                 mItem.setTitle("全不选");
+                showFooter("operate", false, null);
             } else {
                 mItem.setTitle("全选");
             }
+
             return true;
         }
 
@@ -960,6 +968,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                                               int position, long id, boolean checked) {
             if (checked) {
                 operateFiles.add(fileItems.get(position).getFile());
+            }else{
+                operateFiles.remove(fileItems.get(position).getFile());
             }
             updateSelectedState();
             mode.invalidate();
@@ -967,22 +977,27 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         }
 
         private void updateSelectedState() {
-            mSelectedCount.setText(operateFiles.size() + "");
+            mSelectedCount.setText(listView.getCheckedItemCount());
         }
 
-        private void selectedAll() {
-            for (int i = 0; i < fileAdapter.getCount(); i++) {
-                listView.setItemChecked(i, true);
-                operateFiles.add(fileAdapter.getItem(i).getFile());
-            }
-            updateSelectedState();
-        }
+    }
 
-        private void unSelectedAll() {
-            listView.clearChoices();
-            listView.setItemChecked(0, false);
-            operateFiles.clear();
-            updateSelectedState();
+    private void selectedAll() {
+        for (int i = 0; i < fileAdapter.getCount(); i++) {
+            listView.setItemChecked(i, true);
+            operateFiles.add(fileAdapter.getItem(i).getFile());
+        }
+        if(multipleChoiceModeCallBack != null) {
+            multipleChoiceModeCallBack.updateSelectedState();
+        }
+    }
+
+    private void unSelectedAll() {
+        listView.clearChoices();
+        listView.setItemChecked(0, false);
+        operateFiles.clear();
+        if(multipleChoiceModeCallBack != null) {
+            multipleChoiceModeCallBack.updateSelectedState();
         }
     }
 
