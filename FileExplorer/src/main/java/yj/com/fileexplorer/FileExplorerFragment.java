@@ -119,7 +119,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 listView.setSelection(historyEntity.scrollItem);
 
             }
-        }else if (!file.canRead()) {
+        } else if (!file.canRead()) {
             showAlertDialog(null, "对不起，您无法访问该文件");
         } else if (file.isDirectory()) {
             //历史记录,永远是上一层
@@ -150,15 +150,13 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     }
 
 
-
-
     /**
      * 显示，隐藏menu
      *
      * @param menuId  需要使用的MenuId
      * @param visible 可见？
      */
-    public void showOrHideMenus(Menu menu , boolean visible, int... menuId) {
+    public void showOrHideMenus(Menu menu, boolean visible, int... menuId) {
         if (menu != null) {
             for (int id : menuId) {
                 menu.findItem(id).setVisible(visible);
@@ -357,7 +355,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      * @return true 代表成功展示子文件夹
      */
     private boolean listFiles(File dir) {
-       this.footerViewHolder.button.get(R.id.confirm_buttonRectangle).setEnabled(true);
+        this.footerViewHolder.button.get(R.id.confirm_buttonRectangle).setEnabled(true);
 
         if (dir == null) {
             return false;
@@ -522,7 +520,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 显示粘贴，复制这些的footer
-     * @param visible 可见？
+     *
+     * @param visible     可见？
      * @param operateType 操作
      */
     private void showFooter(boolean visible, FileTools.OperateType operateType) {
@@ -654,10 +653,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 });
                 delivery.show(getFragmentManager());
             }
-        } else if(id == R.id.menu_mulSelected){
-            //进入多选
-            listView.setItemChecked(0, true);
-            //没有选择
+        } else if (id == R.id.menu_mulSelected) {
+            listView.setItemChecked(0,true);
             listView.clearChoices();
         }
         return true;
@@ -841,6 +838,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      */
     private class MultipleChoiceModeCallBack implements ListView.MultiChoiceModeListener {
         private ActionMode mode;
+
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             Log.e(TAG, "create");
@@ -856,7 +854,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             Log.e(TAG, "prepare");
-            if(this.mode == null){
+            if (this.mode == null) {
                 this.mode = mode;
             }
 
@@ -868,10 +866,36 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 mItem.setTitle("全选");
             }
 
-            if(listView.getCheckedItemCount() == 1){
-               showOrHideMenus(menu, true, R.id.menu_detail);
-            }else{
-                showOrHideMenus(menu, false , R.id.menu_detail);
+            if (listView.getCheckedItemCount() == 1) {
+                //显示详细信息
+                showOrHideMenus(menu, true, R.id.menu_detail);
+
+                if (operateFiles.size() == 1) {
+                    //选择该文件夹作为存储文件夹
+                    final File file = operateFiles.iterator().next();
+                    if (file.isDirectory()) {
+                        PostOffice.newMail(getActivity())
+                                .setTitle("警告")
+                                .setThemeColor(R.color.dialogColor)
+                                .setButtonTextColor(Dialog.BUTTON_POSITIVE, android.R.color.holo_red_light)
+                                .setDesign(Design.MATERIAL_LIGHT).setMessage("是否选择该文件夹存储数据？")
+                                .setButton(Dialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setButton(Dialog.BUTTON_POSITIVE, "确认", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        explorerCallBack.selectedFile(file.getAbsolutePath());
+                                        dialog.dismiss();
+                                    }
+                                }).show(getFragmentManager());
+                    }
+                }
+            } else {
+                showOrHideMenus(menu, false, R.id.menu_detail);
             }
 
             return true;
@@ -889,26 +913,27 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     selectedAll();
                 }
                 fileAdapter.notifyDataSetChanged();
-            }else if (id == R.id.menu_delete) {
-                hideActionMode();
+            } else if (id == R.id.menu_delete) {
                 backgroundOperate(null, FileTools.OperateType.DELETE);
+                mode.finish();
             } else if (id == R.id.menu_copy) {
-                hideActionMode();
                 //显示footer
                 showFooter(true, FileTools.OperateType.COPY);
                 operateType = FileTools.OperateType.COPY;
 
+                mode.finish();
             } else if (id == R.id.menu_cut) {
-                hideActionMode();
                 //显示footer
                 showFooter(true, FileTools.OperateType.CUT);
                 operateType = FileTools.OperateType.CUT;
 
+                mode.finish();
             } else if (id == R.id.menu_share) {
-                hideActionMode();
                 operateType = FileTools.OperateType.SHARE;
                 Log.e(TAG, "share");
-            }else if(id == R.id.menu_detail){
+
+                mode.finish();
+            } else if (id == R.id.menu_detail) {
                 //不是文件夹，长按显示详细信息
                 try {
                     File file = operateFiles.iterator().next();
@@ -916,6 +941,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                 } catch (Exception e) {
                     showAlertDialog("警告", e.getMessage());
                 }
+
+                mode.finish();
             }
             return true;
         }
@@ -932,7 +959,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             Log.e(TAG, "item click");
             if (checked) {
                 operateFiles.add(fileItems.get(position).getFile());
-            }else{
+            } else {
                 operateFiles.remove(fileItems.get(position).getFile());
             }
             updateSelectedState();
@@ -957,12 +984,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             listView.setItemChecked(0, false);
             updateSelectedState();
             operateFiles.clear();
-        }
-
-        private void hideActionMode(){
-            //取消多选状态
-            listView.clearChoices();
-            listView.setItemChecked(0, false);
         }
 
     }
