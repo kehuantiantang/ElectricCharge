@@ -39,22 +39,28 @@ public class FileTools {
      * 操作
      */
     public enum OperateType {
-        COPY("复制"),
-        CUT("粘贴"),
-        DELETE("删除"),
-        NEW_FOLDER("新建文件夹"),
-        SHARE("分享"),
-        EMPTY("空");
+        COPY("copy", "复制"),
+        CUT("cut", "粘贴"),
+        DELETE("delete", "删除"),
+        NEW_FOLDER("newFolder", "新建文件夹"),
+        SHARE("share", "分享"),
+        EMPTY("empty", "空");
 
         private String value;
+        private String chineseValue;
 
-        private OperateType(String value) {
+        OperateType(String value, String chineseValue) {
             this.value = value;
+            this.chineseValue = chineseValue;
         }
 
-        @Override
-        public String toString() {
+
+        public String getValue(){
             return value;
+        }
+
+        public String getChineseValue(){
+            return chineseValue;
         }
     }
 
