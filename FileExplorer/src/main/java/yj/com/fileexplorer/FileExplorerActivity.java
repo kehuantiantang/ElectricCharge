@@ -29,7 +29,6 @@ public class FileExplorerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_explorer);
 
-        //TODO 就是显示不了标题....
         this.actionBar = super.getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
         this.actionBar.setTitle("文件浏览器");

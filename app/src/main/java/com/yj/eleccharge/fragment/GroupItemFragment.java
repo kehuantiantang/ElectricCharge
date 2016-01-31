@@ -109,7 +109,7 @@ public class GroupItemFragment extends Fragment {
                 // set item width
                 deleteItem.setWidth(dp2px(56));
                 // set a icon
-                deleteItem.setIcon(R.drawable.ic_delete);
+                deleteItem.setIcon(R.drawable.ic_delete_white);
                 // add to menu
                 menu.addMenuItem(deleteItem);
             }

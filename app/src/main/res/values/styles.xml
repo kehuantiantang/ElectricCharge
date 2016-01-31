@@ -11,7 +11,9 @@
         <item name="android:textColorSecondary">@color/secondary_text</item>
         <item name="android:dialogTheme">@style/DialogTheme</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="actionModeStyle">@style/ActionMode</item>
     </style>
+
 
     <!--dialogTheme-->
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
@@ -20,10 +22,17 @@
         <item name="colorAccent">?colorAccent</item>
     </style>
 
+    <!--下面的两个是给ActionMode的-->
+    <style name="ActionMode">
+        <item name="actionModeBackground">@color/colorPrimary</item>
+        <item name="backgroundSplit">?android:attr/actionModeSplitBackground</item>
+        <item name="actionModeCloseButtonStyle">@null</item>
+    </style>
 
+    <!--ActionBar的风格-->
     <style name="ActionBar.Dark" parent="Theme.AppCompat.Light.DarkActionBar" >
         <item name="background">?colorPrimary</item>
-        <item name="displayOptions">showTitle</item>
+        <item name="displayOptions">showHome|showTitle</item>
         <item name="height">?actionBarSize</item>
     </style>
 

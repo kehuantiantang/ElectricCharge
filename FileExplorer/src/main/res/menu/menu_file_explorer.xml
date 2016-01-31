@@ -12,7 +12,11 @@
         android:title="刷新"
         app:showAsAction="never" />
 
-
+    <item
+        android:id="@+id/menu_mulSelected"
+        android:title="多选"
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/menu_sort"
         android:title="排序"

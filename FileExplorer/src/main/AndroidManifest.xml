@@ -10,7 +10,7 @@
         android:theme="@style/AppTheme"
         android:allowBackup="true"
         android:supportsRtl="true" >
-        <activity android:name="yj.com.fileexplorer.FileExplorerActivity" >
+        <activity android:name="yj.com.fileexplorer.FileExplorerActivity">
         </activity>
     </application>
 </manifest>

@@ -464,8 +464,11 @@ public class FileTools {
         if(!copy(oldPath, newPath)){
             return false;
         }
-        if(!delete(oldPath)){
-            return false;
+        //避免出现在一个文件夹中复制的情况
+        if(!oldPath.equals(newPath)){
+            if(!delete(oldPath)){
+                return false;
+            }
         }
         return true;
     }
