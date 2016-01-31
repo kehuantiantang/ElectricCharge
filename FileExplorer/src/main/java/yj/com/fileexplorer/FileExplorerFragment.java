@@ -27,6 +27,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -60,7 +61,7 @@ import yj.com.fileexplorer.ui.QuickReturnViewType;
 /**
  * Created by Sober on 2016/1/27.
  */
-public class FileExplorerFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SwipeMenuListView.OnMenuItemClickListener {
+public class FileExplorerFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, SwipeMenuListView.OnMenuItemClickListener {
 
     private String TAG = getClass().getSimpleName();
 
@@ -144,43 +145,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     }
 
 
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position < 0 || position > this.fileItems.size()) {
-            return false;
-        }
-        final File file = this.fileItems.get(position).getFile();
-        //是文件夹
-        if (file.isDirectory()) {
-            PostOffice.newMail(getActivity())
-                    .setTitle("警告")
-                    .setThemeColor(R.color.dialogColor)
-                    .setButtonTextColor(Dialog.BUTTON_POSITIVE, android.R.color.holo_red_light)
-                    .setDesign(Design.MATERIAL_LIGHT).setMessage("是否选择该文件夹存储数据？")
-                    .setButton(Dialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setButton(Dialog.BUTTON_POSITIVE, "确认", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            explorerCallBack.selectedFile(file.getAbsolutePath());
-                            dialog.dismiss();
-                        }
-                    }).show(getFragmentManager());
-        } else {
-            //不是文件夹，长按显示详细信息
-            try {
-                showAlertDialog(file.getName(), fileTools.getFileDetailInfo(file.getAbsolutePath()));
-            } catch (Exception e) {
-                showAlertDialog("警告", e.getMessage());
-            }
-        }
-        return true;
-    }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -208,7 +172,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             case 0:
                 final Delivery deleteDialog = showProgressDialog("删除中.....");
 
-                this.myHandler.setHandlerCallBack(new HandlerCallBack() {
+                this.myHandler.setHandlerCallBack(new MyHandler.HandlerCallBack() {
                     @Override
                     public void executeMessage(Message message) {
                         deleteDialog.dismiss();
@@ -221,7 +185,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     }
                 });
 
-               new Thread(new Runnable() {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Message message = new Message();
@@ -276,10 +240,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             showFooter("confirm", false, null);
             final String targetPath = currentDir.getAbsolutePath();
 
-            if(this.operateType == FileTools.OperateType.COPY){
+            if (this.operateType == FileTools.OperateType.COPY) {
                 final Delivery copyDialog = showProgressDialog("正在复制.......");
 
-                myHandler.setHandlerCallBack(new HandlerCallBack() {
+                myHandler.setHandlerCallBack(new MyHandler.HandlerCallBack() {
                     @Override
                     public void executeMessage(Message message) {
                         String log = message.obj.toString();
@@ -292,7 +256,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     }
                 });
 
-               new Thread(new Runnable() {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
                         StringBuffer log = new StringBuffer();
@@ -307,10 +271,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     }
                 }).start();
 
-            }else if(this.operateType == FileTools.OperateType.CUT){
+            } else if (this.operateType == FileTools.OperateType.CUT) {
                 final Delivery cutDialog = showProgressDialog("正在粘贴.......");
 
-                myHandler.setHandlerCallBack(new HandlerCallBack() {
+                myHandler.setHandlerCallBack(new MyHandler.HandlerCallBack() {
                     @Override
                     public void executeMessage(Message message) {
                         String log = message.obj.toString();
@@ -337,21 +301,61 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                         myHandler.sendMessage(message);
                     }
                 }).start();
-            }else{
+            } else {
                 Log.e(TAG, "Operate type error!");
             }
             this.operateType = FileTools.OperateType.EMPTY;
-        }else if(id == R.id.button_operation_delete){
-            Log.e(TAG, "button_operation_delete");
-        }else if(id == R.id.button_operation_copy){
+        } else if (id == R.id.button_operation_delete) {
+            final Delivery deleteDialog = showProgressDialog("删除中.....");
+
+            this.myHandler.setHandlerCallBack(new MyHandler.HandlerCallBack() {
+                @Override
+                public void executeMessage(Message message) {
+                    deleteDialog.dismiss();
+                    String log = message.obj.toString();
+                    if ("".equals(log)) {
+                        showAlertDialog("失败", log);
+                    } else {
+                        listFiles(currentDir);
+                    }
+                }
+            });
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    StringBuffer stringBuffer = new StringBuffer();
+                    for (File file : operateFiles) {
+                        if (!fileTools.delete(file.getAbsolutePath())) {
+                            stringBuffer.append(file.getName() + "\n");
+                        }
+                    }
+                    Message message = new Message();
+                    message.obj = stringBuffer.toString();
+                    myHandler.sendMessage(message);
+                }
+            }).start();
+        } else if (id == R.id.button_operation_copy) {
+            //显示footer
+            showFooter("confirm", true, FileTools.OperateType.COPY);
+            //添加文件
             this.operateType = FileTools.OperateType.COPY;
-        }else if(id == R.id.button_operation_cut){
+        } else if (id == R.id.button_operation_cut) {
+            //显示footer
+            showFooter("confirm", true, FileTools.OperateType.CUT);
             this.operateType = FileTools.OperateType.CUT;
-        }else if(id == R.id.button_operation_share){
+
+        } else if (id == R.id.button_operation_share) {
             this.operateType = FileTools.OperateType.SHARE;
-        }else if(id == R.id.button_operation_cancel){
+        } else if (id == R.id.button_operation_cancel) {
             this.operateType = FileTools.OperateType.EMPTY;
-        }else{
+            //隐藏footer
+            showFooter("confirm", false, FileTools.OperateType.EMPTY);
+            showFooter("operate", false, FileTools.OperateType.EMPTY);
+            //添加文件
+            this.operateFiles.clear();
+            this.operateType = FileTools.OperateType.EMPTY;
+        } else {
             Log.e(TAG, "onClick");
         }
     }
@@ -429,7 +433,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         this.swipeMenuListView.setSwipeEnabled(false);
         fileAdapter.notifyDataSetChanged();
 
-        if(this.operateType != FileTools.OperateType.EMPTY){
+        if (this.operateType != FileTools.OperateType.EMPTY) {
             footerViewHolderMap.get("confirm").button.get(R.id.confirm_buttonRectangle).setEnabled(false);
         }
     }
@@ -566,9 +570,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 初始化系统需要的ViewHolder
+     *
      * @param root
      */
-    private void initFooterViewHolder(View root){
+    private void initFooterViewHolder(View root) {
         //获得footer的高度
         int footerHeight = getActivity().getResources().getDimensionPixelSize(R.dimen.footer_height);
 
@@ -576,7 +581,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         //其中的按钮
         int[] confirmButtonIds = {R.id.confirm_buttonRectangle, R.id.cancel_buttonRectangle};
-        for(int id : confirmButtonIds){
+        for (int id : confirmButtonIds) {
             ButtonRectangle button = (ButtonRectangle) root.findViewById(id);
             button.setOnClickListener(this);
             confirmFooterViewHolder.button.put(id, button);
@@ -599,7 +604,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         operateFooterViewHolder.footer = operateFooter;
 
         int[] operateButtonIds = {R.id.button_operation_delete, R.id.button_operation_copy, R.id.button_operation_cut, R.id.button_operation_share, R.id.button_operation_cancel};
-        for(int id : operateButtonIds){
+        for (int id : operateButtonIds) {
             ButtonIcon button = (ButtonIcon) root.findViewById(id);
             button.setOnClickListener(this);
             operateFooterViewHolder.button.put(id, button);
@@ -631,7 +636,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         //设置空的View
         this.swipeMenuListView.setEmptyView(this.emptyView);
         this.swipeMenuListView.setOnItemClickListener(this);
-        this.swipeMenuListView.setOnItemLongClickListener(this);
 
 
         this.fileAdapter = new FileAdapter(getActivity(), this.fileItems);
@@ -649,6 +653,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         swipeMenuListView.setMenuCreator(creator);
         swipeMenuListView.setOnMenuItemClickListener(this);
         swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        swipeMenuListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
         listRoots();
         return root;
@@ -656,16 +661,17 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 显示Footer
-     * @param key 要显示哪个Footer
+     *
+     * @param key     要显示哪个Footer
      * @param visible 是否可见
      */
     private void showFooter(String key, boolean visible, FileTools.OperateType operateType) {
         FooterViewHolder footerViewHolder = footerViewHolderMap.get(key);
-        if(footerViewHolder != null){
+        if (footerViewHolder != null) {
             footerViewHolder.scrollListener.setScrollListenerEnabled(visible);
             this.swipeMenuListView.setOnScrollListener(footerViewHolder.scrollListener);
             footerViewHolder.footer.setVisibility(visible ? View.VISIBLE : View.GONE);
-            if(operateType != null) {
+            if (operateType != null) {
                 footerViewHolder.button.get(R.id.confirm_buttonRectangle).setText(operateType.toString());
             }
             //隐藏其他的
@@ -676,7 +682,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                     }
                 }
             }
-        }else{
+        } else {
             Log.e(TAG, "Key Error");
         }
 
@@ -790,12 +796,12 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                                 }).build())
                         .build();
 
-                myHandler.setHandlerCallBack(new HandlerCallBack() {
+                myHandler.setHandlerCallBack(new MyHandler.HandlerCallBack() {
                     @Override
                     public void executeMessage(Message message) {
-                        if((boolean)message.obj){
+                        if ((boolean) message.obj) {
                             listFiles(currentDir);
-                        }else{
+                        } else {
                             showAlertDialog("", "文件重名，创建文件夹失败");
                         }
                     }
@@ -1022,9 +1028,13 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
             this.handlerCallBack = handlerCallBack;
         }
 
+        interface HandlerCallBack {
+            void executeMessage(Message message);
+        }
     }
 
-    private interface HandlerCallBack {
-        void executeMessage(Message message);
-    }
+
+
+
+
 }
