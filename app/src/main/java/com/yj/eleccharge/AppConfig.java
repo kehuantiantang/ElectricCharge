@@ -100,7 +100,7 @@ public class AppConfig {
     /**
      * Debug模式？
      */
-    public static final boolean DEBUG_MODEL = true;
+    public static final boolean DEBUG_MODEL = false;
 
     /**
      * wifi 上传日志？

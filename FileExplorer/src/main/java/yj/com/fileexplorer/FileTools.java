@@ -55,11 +55,11 @@ public class FileTools {
         }
 
 
-        public String getValue(){
+        public String getValue() {
             return value;
         }
 
-        public String getChineseValue(){
+        public String getChineseValue() {
             return chineseValue;
         }
     }
@@ -350,24 +350,24 @@ public class FileTools {
 
     /**
      * 删除文件，目录或者是文件都可以
+     *
      * @param filePath 删除的地址
      * @return
      */
-    public boolean delete(String filePath){
+    public boolean delete(String filePath) {
         File delFile = new File(filePath);
-        if(!delFile.exists()){
+        if (!delFile.exists()) {
             return false;
-        }else{
-            if(delFile.isDirectory()){
+        } else {
+            if (delFile.isDirectory()) {
                 String[] children = delFile.list();
-                for(String child : children){
+                for (String child : children) {
                     delete(delFile.getAbsolutePath() + File.separator + child);
                 }
             }
             return delFile.delete();
         }
     }
-
 
 
     /**
@@ -395,6 +395,10 @@ public class FileTools {
      * @return String 返回拷贝文件的日志
      */
     public boolean copyFile(String oldPath, String newPath) {
+        //相同目录的情况
+        if(oldPath.equals(newPath)){
+            return true;
+        }
         try {
             int byteRead;
             File oldFile = new File(oldPath);
@@ -422,10 +426,15 @@ public class FileTools {
 
     /**
      * 复制文件
+     *
      * @param oldPath 原文件，文件或者是文件夹
      * @param newPath 必须是文件夹
      */
     public boolean copy(String oldPath, String newPath) {
+        //在相同目录内复制
+        if(oldPath.equals(newPath)){
+            return true;
+        }
         File oldFile = new File(oldPath);
         File target = new File(newPath);
         if (!oldFile.exists() || !target.exists() || !target.isDirectory()) {
@@ -438,13 +447,13 @@ public class FileTools {
                 File newFile = new File(newPath);
                 newFile.mkdirs();
                 File[] children = oldFile.listFiles();
-                for(File child : children){
-                    if(child.isDirectory()){
+                for (File child : children) {
+                    if (child.isDirectory()) {
                         flag = copy(child.getAbsolutePath(), newPath);
-                        if(!flag){
+                        if (!flag) {
                             break;
                         }
-                    }else{
+                    } else {
                         flag = copyFile(child.getAbsolutePath(), newPath + File.separator + child.getName());
                     }
                 }
@@ -456,19 +465,21 @@ public class FileTools {
 
     /**
      * 剪切文件
+     *
      * @param oldPath 原文件地址
      * @param newPath 目的文件地址
      * @return
      */
-    public boolean cut(String oldPath, String newPath){
-        if(!copy(oldPath, newPath)){
+    public boolean cut(String oldPath, String newPath) {
+        if (oldPath.equals(newPath)) {
+            return true;
+        }
+        if (!copy(oldPath, newPath)) {
             return false;
         }
-        //避免出现在一个文件夹中复制的情况
-        if(!oldPath.equals(newPath)){
-            if(!delete(oldPath)){
-                return false;
-            }
+        //避免出现在一个文件夹中粘贴行为的情况
+        if (!delete(oldPath)) {
+            return false;
         }
         return true;
     }

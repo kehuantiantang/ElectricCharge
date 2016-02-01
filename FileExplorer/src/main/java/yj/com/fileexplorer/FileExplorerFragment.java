@@ -97,6 +97,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.e(TAG, "on item click " + position);
+
         if (position < 0 || position > this.fileItems.size()) {
             return;
         }
@@ -845,29 +847,35 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
     /**
      * 点击长按以后的多选事件
+     * http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2014/1105/1906.html
      */
     private class MultipleChoiceModeCallBack implements ListView.MultiChoiceModeListener {
-        private ActionMode mode;
+        private ActionMode actionMode;
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            Log.e(TAG, "oncreate");
+
             //不允许在root文件夹下面启动
             if(currentDir == null){
+                mode.finish();
+                this.actionMode = null;
                 return false;
             }
 
             // actionmode的菜单处理
             MenuInflater inflater = getActivity().getMenuInflater();
             inflater.inflate(R.menu.multi_select_menu, menu);
-            this.mode = mode;
+            this.actionMode = mode;
             mode.setTitle("已选择");
             return true;
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            if (this.mode == null) {
-                this.mode = mode;
+            Log.e(TAG, "prepare");
+            if (this.actionMode == null) {
+                this.actionMode = mode;
             }
 
             //更新菜单的状态
@@ -915,6 +923,8 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            Log.e(TAG, "action click");
+
             int id = item.getItemId();
 
             if (item.getItemId() == R.id.menu_mulSelectState) {
@@ -960,13 +970,16 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            Log.e(TAG, "destory action");
             listView.clearChoices();
-            mode = null;
+            this.actionMode = null;
         }
 
         @Override
         public void onItemCheckedStateChanged(ActionMode mode,
                                               int position, long id, boolean checked) {
+            Log.e(TAG, "item check");
+
             if (checked) {
                 operateFiles.add(fileItems.get(position).getFile());
             } else {
@@ -978,7 +991,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         }
 
         private void updateSelectedState() {
-            mode.setSubtitle(listView.getCheckedItemCount() + "");
+            actionMode.setSubtitle(listView.getCheckedItemCount() + "");
         }
 
         private void selectedAll() {
@@ -997,7 +1010,12 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         }
 
         public ActionMode getActionMode(){
-            return this.mode;
+            return this.actionMode;
+        }
+
+        private void destoryActionMode(ActionMode mode){
+            mode.finish();
+            this.actionMode = null;
         }
 
     }
