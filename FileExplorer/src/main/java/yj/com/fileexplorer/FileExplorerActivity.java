@@ -5,14 +5,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
+import android.view.Window;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import yj.com.fileexplorer.state.FileExplorerFragment;
-import yj.com.fileexplorer.state.ReadOnlyFragment;
-import yj.com.fileexplorer.state.SelectFragment;
+import yj.com.fileexplorer.state.NormalFragment;
 
 /**
  * 文件浏览管理的Activity
@@ -24,6 +26,21 @@ public class FileExplorerActivity extends AppCompatActivity {
     private ActionBar actionBar;
 
 
+    //显示图标
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        if (featureId == Window.FEATURE_ACTION_BAR && menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                }
+            }
+        }
+        return super.onMenuOpened(featureId, menu);
+    }
 
     //选择的文件夹的地址
     private String selectedDirectoryPath;
@@ -39,7 +56,7 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         this.fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        this.fileExplorerFragment = new SelectFragment();
+        this.fileExplorerFragment = new NormalFragment();
         this.fileExplorerFragment.setExplorerCallBack(new FileExplorerFragment.ExplorerCallBack() {
             @Override
             public void updateTitle(String title) {

@@ -2,21 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/menu_new_folder"
-        android:title="新建文件夹"
-        android:visible="false"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/menu_refresh"
         android:title="刷新"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/menu_mulSelected"
-        android:title="多选"
-        app:showAsAction="never"
-        />
     <item
         android:id="@+id/menu_sort"
         android:title="排序"
@@ -42,6 +33,7 @@
     <item
         android:id="@+id/menu_exit"
         android:title="退出"
+        android:orderInCategory="200"
         app:showAsAction="never" />
 
 </menu>

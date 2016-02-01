@@ -45,7 +45,8 @@ public class FileTools {
         DELETE("delete", "删除"),
         NEW_FOLDER("newFolder", "新建文件夹"),
         SHARE("share", "分享"),
-        EMPTY("empty", "空");
+        EMPTY("empty", "空"),
+        SELECT("select", "选择");
 
         private String value;
         private String chineseValue;

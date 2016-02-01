@@ -23,18 +23,16 @@ import yj.com.fileexplorer.R;
 /**
  * 可以进行长按选择的Fragment
  */
-public class SelectFragment extends FileExplorerFragment implements AdapterView.OnItemLongClickListener {
+public class SingleSelectFragment extends FileExplorerFragment implements AdapterView.OnItemLongClickListener {
     private String TAG = getClass().getSimpleName();
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        showOrHideMenus(menu, false, R.id.menu_mulSelected);
     }
 
     @Override
     protected boolean listFiles(File dir) {
         boolean flag = super.listFiles(dir);
-        showOrHideMenus(super.myMenu, false, R.id.menu_mulSelected);
         return flag;
     }
 
@@ -42,7 +40,7 @@ public class SelectFragment extends FileExplorerFragment implements AdapterView.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //没有选取模式
-        super.listViewChoiceMode = ListView.CHOICE_MODE_NONE;
+        listView.setChoiceMode(ListView.CHOICE_MODE_NONE);
         Toast.makeText(getActivity(), "请长按选择指定文件夹", Toast.LENGTH_LONG).show();
     }
 
