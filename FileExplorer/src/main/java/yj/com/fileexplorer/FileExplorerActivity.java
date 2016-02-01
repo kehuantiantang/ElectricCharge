@@ -13,14 +13,13 @@ import android.view.Window;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import yj.com.fileexplorer.state.FileExplorerFragment;
-import yj.com.fileexplorer.state.NormalFragment;
+import yj.com.fileexplorer.state.ReadOnlyFragment;
 
 /**
  * 文件浏览管理的Activity
  */
 public class FileExplorerActivity extends AppCompatActivity {
-    private FileExplorerFragment fileExplorerFragment;
+    private ReadOnlyFragment fileExplorerFragment;
 
     private FragmentManager fragmentManager;
     private ActionBar actionBar;
@@ -56,8 +55,8 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         this.fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        this.fileExplorerFragment = new NormalFragment();
-        this.fileExplorerFragment.setExplorerCallBack(new FileExplorerFragment.ExplorerCallBack() {
+        this.fileExplorerFragment = new ReadOnlyFragment();
+        this.fileExplorerFragment.setExplorerCallBack(new ReadOnlyFragment.ExplorerCallBack() {
             @Override
             public void updateTitle(String title) {
                 if("".equals(title)){

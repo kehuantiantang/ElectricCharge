@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.gc.materialdesign.widgets.Dialog;
@@ -23,7 +22,7 @@ import yj.com.fileexplorer.R;
 /**
  * 可以进行长按选择的Fragment
  */
-public class SingleSelectFragment extends FileExplorerFragment implements AdapterView.OnItemLongClickListener {
+public class SingleSelectFragment extends ReadOnlyFragment implements AdapterView.OnItemLongClickListener {
     private String TAG = getClass().getSimpleName();
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -39,8 +38,6 @@ public class SingleSelectFragment extends FileExplorerFragment implements Adapte
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //没有选取模式
-        listView.setChoiceMode(ListView.CHOICE_MODE_NONE);
         Toast.makeText(getActivity(), "请长按选择指定文件夹", Toast.LENGTH_LONG).show();
     }
 

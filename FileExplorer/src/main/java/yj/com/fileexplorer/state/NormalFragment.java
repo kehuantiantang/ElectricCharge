@@ -15,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.gc.materialdesign.views.Button;
@@ -41,7 +40,7 @@ import yj.com.fileexplorer.ui.QuickReturnViewType;
 /**
  * 能够进行完全文件操作的类，有所有功能
  */
-public class NormalFragment extends FileExplorerFragment implements View.OnClickListener {
+public class NormalFragment extends ReadOnlyFragment implements View.OnClickListener {
     private String TAG = getClass().getSimpleName();
     private FileTools.OperateType operateType;
     private FooterViewHolder footerViewHolder;
@@ -49,19 +48,6 @@ public class NormalFragment extends FileExplorerFragment implements View.OnClick
     private MyHandler myHandler = new MyHandler();
     private MultipleChoiceModeCallBack multipleChoiceModeCallBack;
 
-    private boolean isActionModeStarted = false;
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position < 0 || position > fileItems.size()) {
-            return;
-        }
-        if (isActionModeStarted) {
-            listView.setItemChecked(position, !listView.isItemChecked(position));
-        } else {
-            super.onItemClick(parent, view, position, id);
-        }
-    }
 
 
     /**
@@ -351,10 +337,6 @@ public class NormalFragment extends FileExplorerFragment implements View.OnClick
         }
     }
 
-
-    private void setActionModeStarted(boolean isStarted) {
-        this.isActionModeStarted = isStarted;
-    }
 
     /**
      * 点击长按以后的多选事件
