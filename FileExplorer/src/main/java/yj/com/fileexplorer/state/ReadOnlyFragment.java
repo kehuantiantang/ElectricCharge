@@ -33,6 +33,7 @@ import com.r0adkll.postoffice.styles.ProgressStyle;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -520,6 +521,7 @@ public class ReadOnlyFragment extends Fragment implements AdapterView.OnItemClic
         Delivery dialog = PostOffice.newMail(getActivity())
                 .setDesign(Design.MATERIAL_LIGHT)
                 .setThemeColor(R.color.dialogColor)
+                .setCanceledOnTouchOutside(true)
                 .setStyle(new ProgressStyle.Builder(getActivity())
                         .setProgressStyle(ProgressStyle.NORMAL)
                         .setProgressMessage(message)
@@ -565,9 +567,9 @@ public class ReadOnlyFragment extends Fragment implements AdapterView.OnItemClic
         /**
          * 选择的文件的路径
          *
-         * @param path 地址
+         * @param files 选择的文件
          */
-        void selectedFile(String... path);
+        void selectedFiles(Collection<File> files);
     }
 
     /**

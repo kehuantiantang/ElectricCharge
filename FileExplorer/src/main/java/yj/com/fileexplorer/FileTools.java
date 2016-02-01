@@ -3,6 +3,7 @@ package yj.com.fileexplorer;
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -486,12 +487,12 @@ public class FileTools {
     }
 
     /**
-     * 分享文件
-     *
-     * @param file
+     * 分享文件,因为是反射调用注意参数
+     * @param path 文件地址
      */
-    public void shareFile(File file) {
-
+    public boolean share(String path, String oldPath) {
+        Log.i(TAG, path);
+        return true;
     }
 
 

@@ -1,0 +1,18 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_mulSelectState"
+        android:orderInCategory="10"
+        app:showAsAction="never|withText"
+        android:title="多选"/>
+
+
+    <item
+        android:id="@+id/menu_detail"
+        android:orderInCategory="100"
+        app:showAsAction="never|withText"
+        android:visible="false"
+        android:title="详细信息"/>
+
+</menu>

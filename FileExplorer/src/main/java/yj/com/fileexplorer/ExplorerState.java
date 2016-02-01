@@ -11,6 +11,6 @@ public enum ExplorerState {
     //正常模式，可读，可写，可以进行文件的操作
     NORMAL,
     //可以进行多个选择，按照过滤器的要求来
-    MUL_SELECT;
+    MUL_SELECT
 
 }

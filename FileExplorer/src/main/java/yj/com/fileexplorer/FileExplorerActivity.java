@@ -5,22 +5,26 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.view.Window;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
-import yj.com.fileexplorer.state.NormalFragment;
+import yj.com.fileexplorer.state.MultiSelectFragment;
 import yj.com.fileexplorer.state.ReadOnlyFragment;
 
 /**
  * 文件浏览管理的Activity
  */
 public class FileExplorerActivity extends AppCompatActivity {
-    private ReadOnlyFragment fileExplorerFragment;
+    private MultiSelectFragment fileExplorerFragment;
 
     private FragmentManager fragmentManager;
     private ActionBar actionBar;
@@ -56,7 +60,18 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         this.fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        this.fileExplorerFragment = new NormalFragment();
+        this.fileExplorerFragment = new MultiSelectFragment();
+        this.fileExplorerFragment.setFilenameFilter(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String filename) {
+                File file = new File(dir.getAbsolutePath() + File.separator + filename);
+                if(file.isDirectory()){
+                    return true;
+                }
+                return false;
+            }
+        });
+
         this.fileExplorerFragment.setExplorerCallBack(new ReadOnlyFragment.ExplorerCallBack() {
             @Override
             public void updateTitle(String title) {
@@ -68,8 +83,9 @@ public class FileExplorerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void selectedFile(String... path) {
+            public void selectedFiles(Collection<File> files) {
                 //TODO 传递出去消息
+                Log.e(TAG, "GetSelect" + files.iterator().next().getName());
             }
         });
         fragmentTransaction.add(R.id.fragment_container, this.fileExplorerFragment);

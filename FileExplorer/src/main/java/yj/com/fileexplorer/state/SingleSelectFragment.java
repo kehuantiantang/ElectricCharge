@@ -16,6 +16,8 @@ import com.r0adkll.postoffice.PostOffice;
 import com.r0adkll.postoffice.model.Design;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import yj.com.fileexplorer.R;
 
@@ -67,7 +69,9 @@ public class SingleSelectFragment extends ReadOnlyFragment implements AdapterVie
                     .setButton(Dialog.BUTTON_POSITIVE, "确认", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            explorerCallBack.selectedFile(file.getAbsolutePath());
+                            List<File> files = new ArrayList<>();
+                            files.add(file);
+                            explorerCallBack.selectedFiles(files);
                             dialog.dismiss();
                         }
                     }).show(getFragmentManager());
