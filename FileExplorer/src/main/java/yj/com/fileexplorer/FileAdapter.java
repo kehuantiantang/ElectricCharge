@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.List;
 
 
-class FileAdapter extends BaseAdapter {
+public class FileAdapter extends BaseAdapter {
     private String TAG = getClass().getSimpleName();
 
     static class ViewHolder {

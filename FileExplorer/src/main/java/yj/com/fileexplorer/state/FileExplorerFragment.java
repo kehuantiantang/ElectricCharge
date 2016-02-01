@@ -1,4 +1,4 @@
-package yj.com.fileexplorer;
+package yj.com.fileexplorer.state;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -51,6 +51,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import yj.com.fileexplorer.FileAdapter;
+import yj.com.fileexplorer.FileItem;
+import yj.com.fileexplorer.FileTools;
+import yj.com.fileexplorer.R;
 import yj.com.fileexplorer.ui.QuickReturnListViewOnScrollListener;
 import yj.com.fileexplorer.ui.QuickReturnViewType;
 
@@ -78,7 +82,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     /**
      * 保存下来，按照需要隐藏一些menu
      */
-    private Menu myMenu;
+    protected Menu myMenu;
 
     /**
      * 文件比较的一个记录
@@ -104,7 +108,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         }
 
         //正常的点击Item
-        if(multipleChoiceModeCallBack.getActionMode() == null) {
+        if(listViewChoiceMode != ListView.CHOICE_MODE_MULTIPLE_MODAL || multipleChoiceModeCallBack.getActionMode() == null) {
             FileItem fileItem = this.fileItems.get(position);
             File file = fileItem.getFile();
 
@@ -165,7 +169,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      * @param menuId  需要使用的MenuId
      * @param visible 可见？
      */
-    public void showOrHideMenus(Menu menu, boolean visible, int... menuId) {
+    protected void showOrHideMenus(Menu menu, boolean visible, int... menuId) {
         if (menu != null) {
             for (int id : menuId) {
                 menu.findItem(id).setVisible(visible);
@@ -364,7 +368,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
      * @param dir 当前文件夹
      * @return true 代表成功展示子文件夹
      */
-    private boolean listFiles(File dir) {
+    protected boolean listFiles(File dir) {
         this.footerViewHolder.button.get(R.id.confirm_buttonRectangle).setEnabled(true);
 
         if (dir == null) {
@@ -406,7 +410,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         this.fileAdapter.notifyDataSetChanged();
 
-        //显示异常的菜单
+        //显示隐藏的菜单
         showOrHideMenus(this.myMenu, true, R.id.menu_new_folder, R.id.menu_sort);
         return true;
     }
@@ -495,6 +499,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         return confirmFooterViewHolder;
     }
 
+    protected int listViewChoiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL;
 
     @Nullable
     @Override
@@ -519,10 +524,14 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
 
         this.createAnimationAdapter(this.listView, fileAdapter);
 
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        //多选回调事件
-        this.multipleChoiceModeCallBack = new MultipleChoiceModeCallBack();
-        listView.setMultiChoiceModeListener(multipleChoiceModeCallBack);
+        listView.setChoiceMode(listViewChoiceMode);
+
+        //只有是多选时候才有效
+        if(listViewChoiceMode == ListView.CHOICE_MODE_MULTIPLE_MODAL) {
+            //多选回调事件
+            this.multipleChoiceModeCallBack = new MultipleChoiceModeCallBack();
+            listView.setMultiChoiceModeListener(multipleChoiceModeCallBack);
+        }
 
         listRoots();
         return root;
@@ -762,7 +771,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
     /**
      * 函数回调接口
      */
-    interface ExplorerCallBack {
+    public interface ExplorerCallBack {
         /**
          * 更新标题栏
          *

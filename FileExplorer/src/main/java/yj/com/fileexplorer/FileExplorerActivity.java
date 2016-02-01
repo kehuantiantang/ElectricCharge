@@ -10,6 +10,10 @@ import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
 
+import yj.com.fileexplorer.state.FileExplorerFragment;
+import yj.com.fileexplorer.state.ReadOnlyFragment;
+import yj.com.fileexplorer.state.SelectFragment;
+
 /**
  * 文件浏览管理的Activity
  */
@@ -35,7 +39,7 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         this.fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        this.fileExplorerFragment = new FileExplorerFragment();
+        this.fileExplorerFragment = new SelectFragment();
         this.fileExplorerFragment.setExplorerCallBack(new FileExplorerFragment.ExplorerCallBack() {
             @Override
             public void updateTitle(String title) {
