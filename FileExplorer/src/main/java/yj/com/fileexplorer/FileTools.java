@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +13,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -372,9 +373,9 @@ public class FileTools {
 
     /**
      * 新建目录
-     *
-     * @param folderPath
-     * @return boolean
+     * @param folderPath 新建目录的路径
+     * @param folderName 文件夹名称
+     * @return boolean 返回是否建立成功
      */
     public boolean newFolder(String folderPath, String folderName) {
         File file = new File(folderPath);
@@ -403,15 +404,14 @@ public class FileTools {
             int byteRead;
             File oldFile = new File(oldPath);
 
-            InputStream inStream = null; // 读入原文件
+            BufferedInputStream inStream = null; // 读入原文件
             if (oldFile.exists()) { // 文件存在时
-                inStream = new FileInputStream(oldPath);
+                inStream = new BufferedInputStream(new FileInputStream(oldPath));
             }
 
-            FileOutputStream fs = new FileOutputStream(newPath);
-            byte[] buffer = new byte[1024];
-            while ((byteRead = inStream.read(buffer)) != -1) {
-                fs.write(buffer, 0, byteRead);
+            BufferedOutputStream fs = new BufferedOutputStream(new FileOutputStream(newPath));
+            while ((byteRead = inStream.read()) != -1) {
+                fs.write(byteRead);
             }
             inStream.close();
         } catch (FileNotFoundException e1) {

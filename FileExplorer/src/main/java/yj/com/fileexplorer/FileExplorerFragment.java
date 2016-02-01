@@ -545,7 +545,6 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         } else {
             Log.e(TAG, "Key Error");
         }
-
     }
 
 
@@ -616,7 +615,7 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         } else if (id == R.id.menu_new_folder) {
             //根文件夹无效
             if (currentDir != null) {
-                Delivery delivery = PostOffice.newMail(getActivity())
+                PostOffice.newMail(getActivity())
                         .setTitle("新建文件夹")
                         .setThemeColor(R.color.dialogColor)
                         .setDesign(Design.MATERIAL_LIGHT)
@@ -639,29 +638,10 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
                                 .setOnTextAcceptedListener(new EditTextStyle.OnTextAcceptedListener() {
                                     @Override
                                     public void onAccepted(final String text) {
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Message message = new Message();
-                                                message.obj = fileTools.newFolder(currentDir.getAbsolutePath(), "".equals(text) ? "新建文件夹" : text);
-                                                myHandler.sendMessage(message);
-                                            }
-                                        }).start();
+                                        operateFiles.add(currentDir);
+                                        backgroundOperate(text, FileTools.OperateType.NEW_FOLDER);
                                     }
-                                }).build())
-                        .build();
-
-                myHandler.setHandlerCallBack(new MyHandler.HandlerCallBack() {
-                    @Override
-                    public void executeMessage(Message message) {
-                        if ((boolean) message.obj) {
-                            listFiles(currentDir);
-                        } else {
-                            showAlertDialog("", "文件重名，创建文件夹失败");
-                        }
-                    }
-                });
-                delivery.show(getFragmentManager());
+                                }).build()).show(getFragmentManager());
             }
         } else if (id == R.id.menu_mulSelected) {
             if(this.multipleChoiceModeCallBack == null){
@@ -855,20 +835,22 @@ public class FileExplorerFragment extends Fragment implements View.OnClickListen
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             Log.e(TAG, "oncreate");
+            Log.e(TAG, operateType.getChineseValue());
 
-            //不允许在root文件夹下面启动
-            if(currentDir == null){
+            //不允许在root文件夹下面或者是有执行状态的时候启用
+            if(currentDir == null || operateType != FileTools.OperateType.EMPTY){
+                listView.clearChoices();
                 mode.finish();
                 this.actionMode = null;
                 return false;
+            }else{
+                // actionmode的菜单处理
+                MenuInflater inflater = getActivity().getMenuInflater();
+                inflater.inflate(R.menu.multi_select_menu, menu);
+                this.actionMode = mode;
+                mode.setTitle("已选择");
+                return true;
             }
-
-            // actionmode的菜单处理
-            MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.multi_select_menu, menu);
-            this.actionMode = mode;
-            mode.setTitle("已选择");
-            return true;
         }
 
         @Override
