@@ -46,9 +46,12 @@ public class NormalFragment extends ReadOnlyFragment implements View.OnClickList
     private FooterViewHolder footerViewHolder;
     private Set<File> operateFiles;
     private MyHandler myHandler = new MyHandler();
-    private MultipleChoiceModeCallBack multipleChoiceModeCallBack;
+    private ListView.MultiChoiceModeListener multiChoiceModeListener;
 
 
+    public void setMultiChoiceModeListener(ListView.MultiChoiceModeListener multiChoiceModeListener) {
+        this.multiChoiceModeListener = multiChoiceModeListener;
+    }
 
     /**
      * 存储需要经常使用的View
@@ -75,8 +78,8 @@ public class NormalFragment extends ReadOnlyFragment implements View.OnClickList
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setOnItemClickListener(this);
         //多选回调事件
-        this.multipleChoiceModeCallBack = new MultipleChoiceModeCallBack();
-        listView.setMultiChoiceModeListener(multipleChoiceModeCallBack);
+        this.multiChoiceModeListener = new MultipleChoiceModeCallBack();
+        listView.setMultiChoiceModeListener(multiChoiceModeListener);
         return root;
     }
 
@@ -202,11 +205,11 @@ public class NormalFragment extends ReadOnlyFragment implements View.OnClickList
         if (!flag) {
             switch (item.getItemId()) {
                 case MENU_MUL_SELECT:
-                    if (this.multipleChoiceModeCallBack == null) {
-                        this.multipleChoiceModeCallBack = new MultipleChoiceModeCallBack();
+                    if (this.multiChoiceModeListener == null) {
+                        this.multiChoiceModeListener = new MultipleChoiceModeCallBack();
                     }
                     setActionModeStarted(true);
-                    listView.startActionMode(this.multipleChoiceModeCallBack);
+                    listView.startActionMode(this.multiChoiceModeListener);
 
                     return true;
                 case MENU_NEW_FOLDER:

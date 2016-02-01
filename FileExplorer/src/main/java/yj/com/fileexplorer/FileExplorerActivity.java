@@ -67,7 +67,7 @@ public class FileExplorerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void selectedFile(String path) {
+            public void selectedFile(String... path) {
                 //TODO 传递出去消息
             }
         });

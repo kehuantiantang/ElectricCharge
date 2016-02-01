@@ -567,7 +567,7 @@ public class ReadOnlyFragment extends Fragment implements AdapterView.OnItemClic
          *
          * @param path 地址
          */
-        void selectedFile(String path);
+        void selectedFile(String... path);
     }
 
     /**
