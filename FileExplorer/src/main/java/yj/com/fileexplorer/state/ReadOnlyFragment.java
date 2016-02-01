@@ -479,7 +479,7 @@ public class ReadOnlyFragment extends Fragment implements AdapterView.OnItemClic
      * @param title   标题
      * @param message 信息
      */
-    public Delivery showAlertDialog(String title, String message) {
+    public  Delivery showAlertDialog(String title, String message) {
         Delivery dialog;
         if ("".equals(title)) {
             dialog = PostOffice.newMail(getActivity())

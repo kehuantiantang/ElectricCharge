@@ -13,6 +13,7 @@ import android.view.Window;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import yj.com.fileexplorer.state.NormalFragment;
 import yj.com.fileexplorer.state.ReadOnlyFragment;
 
 /**
@@ -55,7 +56,7 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         this.fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        this.fileExplorerFragment = new ReadOnlyFragment();
+        this.fileExplorerFragment = new NormalFragment();
         this.fileExplorerFragment.setExplorerCallBack(new ReadOnlyFragment.ExplorerCallBack() {
             @Override
             public void updateTitle(String title) {
