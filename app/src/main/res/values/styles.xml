@@ -25,7 +25,7 @@
     <!--下面的两个是给ActionMode的-->
     <style name="ActionMode">
         <item name="actionModeBackground">@color/colorPrimary</item>
-        <item name="backgroundSplit">?android:attr/actionModeSplitBackground</item>
+        <item name="actionModeSplitBackground">?android:attr/actionModeSplitBackground</item>
         <item name="actionModeCloseButtonStyle">@null</item>
     </style>
 
@@ -34,6 +34,8 @@
         <item name="background">?colorPrimary</item>
         <item name="displayOptions">showHome|showTitle</item>
         <item name="height">?actionBarSize</item>
+        <item name="actionBarDivider">@color/hint</item>
+        <!--<item name="homeAsUpIndicator">@drawable/ic_navigation_drawer</item>-->
     </style>
 
 

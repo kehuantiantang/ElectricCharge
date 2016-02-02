@@ -43,7 +43,7 @@
                 app:met_floatingLabel="highlight"
                 app:met_helperText="默认是群组名"
                 app:met_helperTextAlwaysShown="true"
-                app:met_iconLeft="@drawable/ic_drawer"
+                app:met_iconLeft="@drawable/ic_navigation_drawer"
                 app:met_maxCharacters="12"
                 app:met_minCharacters="0"
                 app:met_primaryColor="@color/colorAccent" />
