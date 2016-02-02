@@ -10,7 +10,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-public class LayoutRipple extends CustomView {
+public class LayoutRipple extends CustomView{
 
 	int background;
 	float rippleSpeed = 10f;
@@ -125,6 +125,7 @@ public class LayoutRipple extends CustomView {
 			x = -1;
 			y = -1;
 		}
+		super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class AppConfig {
     /**
      * 系统的设置的SharePreference
      */
-    public final static String SETTING_SHAREDPREFERENCE = "setting";
+    public final static String SETTING_SHARED_PREFERENCE = "setting";
 
     public final static int ACTIVITY_RESULT_OK = -1;
 
@@ -38,11 +38,11 @@ public class AppConfig {
     /**
      * 设置表格默认列宽度为12个字节
      */
-    public final static int DEFALUT_COLUMN_WIDTH = 12;
+    public final static int DEFAULT_COLUMN_WIDTH = 12;
     /**
      * 设置表格行高为20个字节
      */
-    public final static float DEFALUT_COLUMN_HEIGHT = 19.5f;
+    public final static float DEFAULT_COLUMN_HEIGHT = 19.5f;
 
     /**
      * 大标题开始在第几行
@@ -70,17 +70,11 @@ public class AppConfig {
      */
     public final static short CUSTOM_TITLE_TEXT_SIZE = (short)18;
 
+    public static final String BASE_PATH = Environment.getExternalStorageDirectory() + File.separator + "ElectricCharge";
 
-    /**
-     * ExpportInfo的常量
-     */
-    public final static String[] CUSTOM_TITLE = { "户号", "姓名", "上月电", "本月电",
-            "计费量(度)", "单价(元/度)", "金额(元)" };
+    public final static String DEFAULT_XLS_DIR = BASE_PATH + File.separator + "XLS";
 
-    public static final String CUSTOM_GROUP = "赣州八五二台生活用电计费表";
-
-    public final static String DIR_BASE = Environment
-            .getExternalStorageDirectory() + File.separator + "ElectricCharge" + File.separator;
+    public final static String DEFAULT_BACKUP_DIR = BASE_PATH + File.separator + "BACKUP";
 
 
     public final static int FLAG_SUCCESS = 0;
@@ -106,5 +100,6 @@ public class AppConfig {
      * wifi 上传日志？
      */
     public static final boolean IS_WIFI_UPDATE_LOG = true;
+
 
 }

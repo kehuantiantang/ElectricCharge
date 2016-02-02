@@ -436,7 +436,7 @@ public class ReadOnlyFragment extends Fragment implements AdapterView.OnItemClic
                 listFiles(currentDir);
             }
             return true;
-        } else if (id == R.id.menu_exit) {
+        } else if (id == R.id.menu_exit || id == android.R.id.home) {
             this.onFragmentDestroy();
             getActivity().finish();
             return true;

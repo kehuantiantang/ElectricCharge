@@ -45,7 +45,7 @@ public class SettingTools {
         }
 
         //系统设置清除
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AppConfig.SETTING_SHAREDPREFERENCE, 0);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AppConfig.SETTING_SHARED_PREFERENCE, 0);
         sharedPreferences.edit().clear().apply();
         return true;
 

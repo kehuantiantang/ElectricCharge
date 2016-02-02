@@ -25,7 +25,6 @@ import com.r0adkll.postoffice.model.Design;
 import com.r0adkll.postoffice.styles.EditTextStyle;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -35,6 +34,7 @@ import java.util.Set;
 
 import yj.com.fileexplorer.FileItem;
 import yj.com.fileexplorer.FileTools;
+import yj.com.fileexplorer.IFileFilter;
 import yj.com.fileexplorer.R;
 import yj.com.fileexplorer.ui.QuickReturnListViewOnScrollListener;
 import yj.com.fileexplorer.ui.QuickReturnViewType;
@@ -376,7 +376,7 @@ public  class NormalFragment extends ReadOnlyFragment implements View.OnClickLis
         //更新菜单的状态
         MenuItem mItem = menu.findItem(R.id.menu_mulSelectState);
         int selectSize = listView.getCheckedItemCount();
-        if ((filenameFilter != null && currentDir.list(filenameFilter).length == selectSize) || selectSize == fileAdapter.getCount()) {
+        if(fileTools.list(currentDir.getAbsolutePath(), filenameFilter) == selectSize || selectSize == fileAdapter.getCount()){
             mItem.setTitle("全不选");
         } else {
             mItem.setTitle("全选");
@@ -400,7 +400,7 @@ public  class NormalFragment extends ReadOnlyFragment implements View.OnClickLis
 
         if (item.getItemId() == R.id.menu_mulSelectState) {
             int selectSize = listView.getCheckedItemCount();
-            if ((filenameFilter != null && currentDir.list(filenameFilter).length == selectSize) || selectSize == fileAdapter.getCount()) {
+            if(fileTools.list(currentDir.getAbsolutePath(), filenameFilter) == selectSize || selectSize == fileAdapter.getCount()){
                 unSelectedAll();
             } else {
                 selectedAll();
@@ -444,6 +444,8 @@ public  class NormalFragment extends ReadOnlyFragment implements View.OnClickLis
     public void onDestroyActionMode(ActionMode mode) {
 //        Log.e(TAG, "destory action");
         listView.clearChoices();
+        //隐藏footer状态
+        showFooter(false, null);
         setActionModeStarted(false);
     }
 
@@ -492,14 +494,14 @@ public  class NormalFragment extends ReadOnlyFragment implements View.OnClickLis
     }
 
     //文件名字过滤器，注意第一个参数dir是
-    protected FilenameFilter filenameFilter;
+    protected IFileFilter filenameFilter;
 
     /**
      * 设置文件过滤器，注意第一个参数dir是该文件所在的文件夹的File，第二个是该文件的文件名
      * @param filenameFilter 过滤器
      *
      */
-    public void setFilenameFilter(FilenameFilter filenameFilter) {
+    public void setIFileFilter(IFileFilter filenameFilter) {
         this.filenameFilter = filenameFilter;
     }
 }

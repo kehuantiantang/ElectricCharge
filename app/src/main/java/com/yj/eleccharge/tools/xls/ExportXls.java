@@ -129,9 +129,9 @@ public class ExportXls {
         }
         HSSFSheet sheet = workbook.createSheet(title);
         // 设置表格默认列宽度为12个字节
-        sheet.setDefaultColumnWidth(AppConfig.DEFALUT_COLUMN_WIDTH);
+        sheet.setDefaultColumnWidth(AppConfig.DEFAULT_COLUMN_WIDTH);
         // 设置表格行高为20个字节
-        sheet.setDefaultRowHeightInPoints(AppConfig.DEFALUT_COLUMN_HEIGHT);
+        sheet.setDefaultRowHeightInPoints(AppConfig.DEFAULT_COLUMN_HEIGHT);
 
 
         Set<String> subTitles = this.xlsData.getSubTitlesMap().keySet();

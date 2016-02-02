@@ -1,34 +1,53 @@
 package yj.com.fileexplorer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.view.Window;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import yj.com.fileexplorer.state.MultiSelectFragment;
+import yj.com.fileexplorer.state.NormalFragment;
 import yj.com.fileexplorer.state.ReadOnlyFragment;
+import yj.com.fileexplorer.state.SingleSelectFragment;
 
 /**
  * 文件浏览管理的Activity
  */
-public class FileExplorerActivity extends AppCompatActivity {
-    private MultiSelectFragment fileExplorerFragment;
+public class FileExplorerActivity extends AppCompatActivity{
+    private ReadOnlyFragment fileExplorerFragment;
 
     private FragmentManager fragmentManager;
     private ActionBar actionBar;
 
+    /**
+     * 回传的数据
+     */
+    public static final String DELIVERY_STRING = "delivery";
+    /**
+     * 想要对文件进行过滤，需要传递一个接口
+     * @see IFileFilter
+     */
+    public static final String DELIVERY_INTERFACE = "interface";
+    public static final int DELIVERY_RESULT_CODE_OK = 0xffff12;
+    public static final int DELIVERY_RESULT_CODE_FAIL = 0xffff13;
+
+    /**
+     * 进行文件操作的类型
+     *
+     * @see ExplorerState
+     */
+    public static final String EXPLORER_STATE = "EXPLORER_STATE";
 
     //显示图标
     @Override
@@ -50,6 +69,7 @@ public class FileExplorerActivity extends AppCompatActivity {
     private String selectedDirectoryPath;
 
     private String TAG = getClass().getSimpleName();
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_explorer);
@@ -59,25 +79,17 @@ public class FileExplorerActivity extends AppCompatActivity {
         this.actionBar.setTitle("文件浏览器");
 
         this.fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        this.fileExplorerFragment = new MultiSelectFragment();
-        this.fileExplorerFragment.setFilenameFilter(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-                File file = new File(dir.getAbsolutePath() + File.separator + filename);
-                if(file.isDirectory()){
-                    return true;
-                }
-                return false;
-            }
-        });
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+        this.fileExplorerFragment = initFragment();
 
         this.fileExplorerFragment.setExplorerCallBack(new ReadOnlyFragment.ExplorerCallBack() {
             @Override
             public void updateTitle(String title) {
-                if("".equals(title)){
+                if ("".equals(title)) {
                     actionBar.setTitle("文件浏览器");
-                }else {
+                } else {
                     actionBar.setTitle(title);
                 }
             }
@@ -85,7 +97,19 @@ public class FileExplorerActivity extends AppCompatActivity {
             @Override
             public void selectedFiles(Collection<File> files) {
                 //TODO 传递出去消息
-                Log.e(TAG, "GetSelect" + files.iterator().next().getName());
+                Intent intent = new Intent();
+                if (files.size() > 0) {
+                    ArrayList<String> deliveryData = new ArrayList();
+                    for (File file : files) {
+                        deliveryData.add(file.getAbsolutePath());
+                    }
+                    intent.putStringArrayListExtra(DELIVERY_STRING, deliveryData);
+                    FileExplorerActivity.this.setResult(DELIVERY_RESULT_CODE_OK, intent);
+                } else {
+                    FileExplorerActivity.this.setResult(DELIVERY_RESULT_CODE_FAIL, intent);
+                }
+                fileExplorerFragment.onFragmentDestroy();
+                finish();
             }
         });
         fragmentTransaction.add(R.id.fragment_container, this.fileExplorerFragment);
@@ -94,8 +118,33 @@ public class FileExplorerActivity extends AppCompatActivity {
         this.setOverflowMenu();
     }
 
-
-
+    public ReadOnlyFragment initFragment() {
+        ExplorerState state = (ExplorerState) getIntent().getSerializableExtra(EXPLORER_STATE);
+        IFileFilter fileFilter = (IFileFilter)getIntent().getSerializableExtra(DELIVERY_INTERFACE);
+        if(state != null) {
+            switch (state) {
+                case SINGLE_SELECT:
+                    return new SingleSelectFragment();
+                case NORMAL:
+                    NormalFragment normalFragment = new NormalFragment();
+                    if (fileFilter != null) {
+                        normalFragment.setIFileFilter(fileFilter);
+                    }
+                    return normalFragment;
+                case MUL_SELECT:
+                    MultiSelectFragment multiSelectFragment = new MultiSelectFragment();
+                    if (fileFilter != null) {
+                        multiSelectFragment.setIFileFilter(fileFilter);
+                    }
+                    return multiSelectFragment;
+                case READ_ONLY:
+                default:
+                    return new ReadOnlyFragment();
+            }
+        }else{
+            return new ReadOnlyFragment();
+        }
+    }
 
     /**
      * 通过反射强制让Menu显示在ActionBar上面,在OnCreate中调用
@@ -105,7 +154,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         try {
             ViewConfiguration config = ViewConfiguration.get(this);
             Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-            if(menuKeyField != null) {
+            if (menuKeyField != null) {
                 menuKeyField.setAccessible(true);
                 menuKeyField.setBoolean(config, false);
             }
@@ -115,35 +164,10 @@ public class FileExplorerActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * ActionBar的下拉菜单和Home的事件
-     * @param item
-     * @return
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            //点击了actionBar的返回键
-            case android.R.id.home:
-                super.onBackPressed();
-                break;
-            default:
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        this.fileExplorerFragment.onFragmentDestroy();
-        super.onDestroy();
-        this.finish();
-    }
-
 
     @Override
     public void onBackPressed() {
-       //在Fragment中按了返回按钮
+        //在Fragment中按了返回按钮
         if (this.fileExplorerFragment.onBackPressed()) {
             //已经是最后一页了，返回
             super.onBackPressed();

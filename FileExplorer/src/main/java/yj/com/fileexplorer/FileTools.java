@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -493,6 +494,26 @@ public class FileTools {
     public boolean share(String path, String oldPath) {
         Log.i(TAG, path);
         return true;
+    }
+
+    /**
+     * 返回根据fileFilter返回所在path下面的符合filter的文件的数量
+     * @param path 文件路径
+     * @param fileFilter 过滤器
+     * @return 返回的是-1，则代表出错，返回正确的数量
+     */
+    public int list(String path , final IFileFilter fileFilter){
+        File file = new File(path);
+        if(fileFilter == null || !file.exists() || !file.isDirectory()){
+            return -1;
+        }else{
+            return file.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String filename) {
+                    return fileFilter.accept(dir, filename);
+                }
+            }).length;
+        }
     }
 
 

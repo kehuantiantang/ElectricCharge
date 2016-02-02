@@ -1,9 +1,11 @@
 package yj.com.fileexplorer;
 
+import java.io.Serializable;
+
 /**
  * Created by Sober on 2016/2/1.
  */
-public enum ExplorerState {
+public enum ExplorerState implements Serializable{
     //只能进行选择一个文件夹操作
     SINGLE_SELECT,
     //可以打开文件这种

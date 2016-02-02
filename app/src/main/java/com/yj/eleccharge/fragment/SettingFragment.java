@@ -2,12 +2,14 @@ package com.yj.eleccharge.fragment;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,14 +35,18 @@ import com.yj.eleccharge.entity.Group;
 import com.yj.eleccharge.tools.DbTools;
 import com.yj.eleccharge.tools.SettingTools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import yj.com.fileexplorer.ExplorerState;
+import yj.com.fileexplorer.FileExplorerActivity;
 
 /**
  * Created by 游捷 on 2015/8/19.
  * 滑动ListView的fragment创建
  */
-public class SettingFragment extends Fragment implements View.OnClickListener {
+public class SettingFragment extends Fragment implements View.OnClickListener , Serializable{
 
 
     private TextView maxCountTextView;
@@ -50,8 +56,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     /**
      * 保存setting到SharePreference的工具
      */
-    private SharedPreferences sharedPreferencese;
+    private SharedPreferences sharedPreference;
 
+
+    private static final int XLS_RESULT_CODE = 0xabc1;
+    private static final int BACKUP_RESULT_CODE = 0xabc2;
+
+    private String TAG = getClass().getSimpleName();
 
 
     @Override
@@ -62,10 +73,10 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);
 
        //获得设置
-        if(!SettingTools.isExist(this.getActivity().getBaseContext(), AppConfig.SETTING_SHAREDPREFERENCE)){
-            this.sharedPreferencese = SettingTools.getSharedPreferencesFromStrings(getActivity().getBaseContext(), AppConfig.SETTING_SHAREDPREFERENCE, R.array.setting_system_default);
+        if(!SettingTools.isExist(this.getActivity().getBaseContext(), AppConfig.SETTING_SHARED_PREFERENCE)){
+            this.sharedPreference = SettingTools.getSharedPreferencesFromStrings(getActivity().getBaseContext(), AppConfig.SETTING_SHARED_PREFERENCE, R.array.setting_system_default);
         }else{
-            this.sharedPreferencese = this.getActivity().getSharedPreferences(AppConfig.SETTING_SHAREDPREFERENCE, 0);
+            this.sharedPreference = this.getActivity().getSharedPreferences(AppConfig.SETTING_SHARED_PREFERENCE, 0);
         }
     }
 
@@ -75,6 +86,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         this.initUI(rootView);
         return rootView;
     }
+
 
     @Override
     public void onClick(View v) {
@@ -107,7 +119,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                                 .setOnTextAcceptedListener(new EditTextStyle.OnTextAcceptedListener() {
                                     @Override
                                     public void onAccepted(String text) {
-                                        sharedPreferencese.edit().putString("maxCount", text).apply();
+                                        sharedPreference.edit().putString("maxCount", text).apply();
                                         maxCountTextView.setText(text);
                                     }
                                 }).build())
@@ -117,7 +129,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
             //file save path
             case R.id.setting_saveDirGroup:
                 //TODO 选择文件目录
-                Toast.makeText(getActivity(), "R.id.setting_saveDirGroup", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), FileExplorerActivity.class);
+                intent.putExtra(FileExplorerActivity.EXPLORER_STATE, ExplorerState.SINGLE_SELECT);
+                startActivityForResult(intent, XLS_RESULT_CODE);
                 break;
 
             //database backup
@@ -240,39 +254,54 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case BACKUP_RESULT_CODE:
+                break;
+            case XLS_RESULT_CODE:
+                if(resultCode == FileExplorerActivity.DELIVERY_RESULT_CODE_OK){
+                    String path = data.getStringArrayListExtra(FileExplorerActivity.DELIVERY_STRING).get(0);
+                    saveDirTextView.setText(path);
+                    Log.e(TAG, path);
+                }
+                break;
+        }
+    }
 
     private void initUI(View rootView) {
 
         LayoutRipple maxCountGroupLayoutRipple = (LayoutRipple) rootView.findViewById(R.id.setting_maxCountGroup);
-        setOriginRiple(maxCountGroupLayoutRipple);
+        setOriginRipple(maxCountGroupLayoutRipple);
 
         LayoutRipple saveDirGroupLayoutRipple = (LayoutRipple) rootView.findViewById(R.id.setting_saveDirGroup);
-        setOriginRiple(saveDirGroupLayoutRipple);
+        setOriginRipple(saveDirGroupLayoutRipple);
 
         LayoutRipple backupGroupLayoutRipple = (LayoutRipple) rootView.findViewById(R.id.setting_backupGroup);
-        setOriginRiple(backupGroupLayoutRipple);
+        setOriginRipple(backupGroupLayoutRipple);
 
         LayoutRipple clearXlsLayoutRipple = (LayoutRipple) rootView.findViewById(R.id.setting_clearXls);
-        setOriginRiple(clearXlsLayoutRipple);
+        setOriginRipple(clearXlsLayoutRipple);
 
 
         LayoutRipple clearXlsSettingLayoutRipple = (LayoutRipple) rootView.findViewById(R.id.setting_clearXlsSetting);
-        setOriginRiple(clearXlsSettingLayoutRipple);
+        setOriginRipple(clearXlsSettingLayoutRipple);
 
         LayoutRipple defaultLayoutRipple = (LayoutRipple) rootView.findViewById(R.id.setting_defaultGroup);
-        setOriginRiple(defaultLayoutRipple);
+        setOriginRipple(defaultLayoutRipple);
 
 
         maxCountTextView = (TextView) rootView.findViewById(R.id.setting_maxCount);
-        maxCountTextView.setText(sharedPreferencese.getString("maxCount", "9999.0"));
+        maxCountTextView.setText(sharedPreference.getString("maxCount", AppConfig.SETTING_SETTING_FULL_QUOTA + ""));
         saveDirTextView = (TextView) rootView.findViewById(R.id.setting_saveDir);
-        saveDirTextView.setText(sharedPreferencese.getString("setting_saveDir", ""));
+        saveDirTextView.setText(sharedPreference.getString("setting_saveDir", AppConfig.DEFAULT_XLS_DIR));
         backupTextView = (TextView) rootView.findViewById(R.id.setting_backup);
-        backupTextView.setText(sharedPreferencese.getString("setting_backup", ""));
+        backupTextView.setText(sharedPreference.getString("setting_backup", "无"));
     }
 
     //设置Ripple初始参数
-    private void setOriginRiple(final LayoutRipple layoutRipple) {
+    private void setOriginRipple(final LayoutRipple layoutRipple) {
         layoutRipple.setOnClickListener(this);
         layoutRipple.post(new Runnable() {
 

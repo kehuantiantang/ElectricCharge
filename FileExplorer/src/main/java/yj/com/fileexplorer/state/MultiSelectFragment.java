@@ -1,6 +1,5 @@
 package yj.com.fileexplorer.state;
 
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,8 +17,8 @@ public class MultiSelectFragment extends NormalFragment {
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        Log.e(TAG, "oncreate");
-        Log.e(TAG, operateType.getChineseValue());
+//        Log.e(TAG, "oncreate");
+//        Log.e(TAG, operateType.getChineseValue());
         // actionmode的菜单处理
         this.actionMode = mode;
 
@@ -41,7 +40,7 @@ public class MultiSelectFragment extends NormalFragment {
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         if (item.getItemId() == R.id.menu_mulSelectState) {
             int selectSize = listView.getCheckedItemCount();
-            if ((filenameFilter != null && currentDir.list(filenameFilter).length == selectSize) || selectSize == fileAdapter.getCount()) {
+            if((filenameFilter != null && fileTools.list(currentDir.getAbsolutePath(), filenameFilter) == selectSize )|| selectSize == fileAdapter.getCount()){
                 unSelectedAll();
             } else {
                 selectedAll();
