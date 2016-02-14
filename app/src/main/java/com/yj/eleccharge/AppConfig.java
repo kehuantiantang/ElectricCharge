@@ -65,6 +65,12 @@ public class AppConfig {
      */
     public final static short CUSTOM_CONTENT_TEXT_SIZE = (short)14;
 
+
+    /**
+     * 数据库名字
+     */
+    public final static String DATABASE_NAME = "eleccharge.db";
+
     /**
      * 标题大小
      */

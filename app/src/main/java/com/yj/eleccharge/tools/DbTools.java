@@ -8,6 +8,7 @@ import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.table.Table;
 import com.lidroid.xutils.exception.DbException;
+import com.yj.eleccharge.AppConfig;
 import com.yj.eleccharge.entity.Charge;
 import com.yj.eleccharge.entity.Group;
 import com.yj.eleccharge.entity.Price;
@@ -32,7 +33,7 @@ public class DbTools {
 
     synchronized public static DbUtils getInstance(Context context) {
         if (db == null) {
-            db = DbUtils.create(context, "eleccharge.db", 1, null);
+            db = DbUtils.create(context, AppConfig.DATABASE_NAME, 1, null);
         }
         return db;
     }
